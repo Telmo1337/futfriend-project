@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/*tabela principal user tera as seguintes propriedades:
+id, email, name, password, createdAt, updatedAt, goals, victories, draws, losses
+e tambem gamesCreated e gamesParticipated
+*/
+model User {
+  id String @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  goals     Int      @default(0)
+  victories Int      @default(0)
+  losses    Int      @default(0)
+  draws     Int      @default(0)
+  playersGame PlayersGame[]
+
+  Game Game[]
+}
+
+
+/*tabela principal game tera as seguintes propriedades:
+id, teamA, teamB, goalsA, goalsB, state, date, location
+createdAt, updatedAt e tambem playersGame
+*/
+model Game {
+  id          String        @id @default(uuid())
+  teamA    String
+  teamB    String
+  goalsA     Int      @default(0)
+  goalsB     Int      @default(0)
+  state     String   @default("scheduled") // scheduled, ongoing, finished
+  date      DateTime
+  location  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+   // quem criou o jogo
+  createdById String
+  createdBy   User          @relation(fields: [createdById], references: [id])
+  playersGame PlayersGame[]
+}
+
+
+/*tabela intermédia playergames tera as seguintes propriedades:
+id, userId, gameId, team (teamA or teamB), score, goals, createdAt, updatedAt
+
+*/
+model PlayersGame {
+   id        String    @id @default(uuid())
+  userId    String
+  gameId    String
+  team      String   // teamA or teamB
+  score     String? //"v", "d", "e" 
+  goals     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@unique([userId, gameId])
+}
