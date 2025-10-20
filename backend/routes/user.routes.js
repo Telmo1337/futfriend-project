@@ -30,7 +30,7 @@ userRouter.post('/', async (req, res) => {
         if (err.code === 'P2002') {
         // Prisma error code for unique constraint violation
         return res.status(400).json({
-            error: 'Já existe um utilizador registado com esse email.',
+            error: 'theres already a user with this email',
         });
         }
         res.status(500).json({err: 'error creating user'})
@@ -63,7 +63,7 @@ userRouter.get('/:id', async (req, res) => {
 
         const user = await prisma.user.findUnique({
             where: {
-                id: Number(id)
+                id
             },
         });
 
@@ -104,7 +104,7 @@ userRouter.put('/:id', async (req, res) => {
 
         const updateUser = await prisma.user.update({
             where: {
-                id: Number(id)
+                id
             },
 
             data: {
@@ -131,29 +131,32 @@ userRouter.put('/:id', async (req, res) => {
 
 //delete user por id
 userRouter.delete('/:id', async (req, res) => {
-    try {
-        const { 
-            id
-        } = req.params;
+  try {
+    const { id } = req.params;
 
-        await prisma.user.delete({
-            where: {
-                id: Number(id)
-            }
-        });
+    // apgar as participations do user
+    await prisma.playersGame.deleteMany({
+      where: { userId: id },
+    });
 
-        res.status(204).send(
-            {
-                message: 'user deleted successfully'
-            }
-        );
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            err: 'error deleting user'
-        });
-    }
-})
+    //apga jogos criados por ele
+    await prisma.game.deleteMany({
+      where: { createdById: id },
+    });
+
+    // apagar o user apenas
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    res.status(200).json({
+        message: "user deleted"
+    })
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'err deleting user' });
+  }
+});
 
 
 

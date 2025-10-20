@@ -28,9 +28,9 @@ model User {
   victories Int      @default(0)
   losses    Int      @default(0)
   draws     Int      @default(0)
-  playersGame PlayersGame[]
-
-  Game Game[]
+ 
+  playersGame  PlayersGame[]
+  Game         Game[]        @relation("UserGames")
 }
 
 
@@ -52,7 +52,7 @@ model Game {
 
    // quem criou o jogo
   createdById String
-  createdBy   User          @relation(fields: [createdById], references: [id])
+  createdBy   User          @relation("UserGames", fields: [createdById], references: [id], onDelete: Cascade)
   playersGame PlayersGame[]
 }
 
@@ -71,8 +71,8 @@ model PlayersGame {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  game Game @relation(fields: [gameId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([userId, gameId])
 }

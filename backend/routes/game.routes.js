@@ -1,18 +1,17 @@
 import {Router} from 'express';
 import {prisma} from '../db/prisma.js';
-
+import { authGuard } from '../utils/auth.js';
 
 const gameRouter = Router();    
 
-//criar novo jogo
-gameRouter.post('/', async (req, res) => {
+//criar novo jogo apenas autenticados
+gameRouter.post('/', authGuard, async (req, res) => {
     try {
         const {
             teamA,
             teamB,
             date,
             location,
-            createdById,
         } = req.body;
 
         const newGame = await prisma.game.create({
@@ -21,7 +20,7 @@ gameRouter.post('/', async (req, res) => {
                 teamB,
                 date: new Date(date),
                 location,
-                createdById,
+                createdById: req.user.id
             },
 
             include: {
@@ -43,8 +42,14 @@ gameRouter.get('/', async (req, res) => {
 
     try {
         const games = await prisma.game.findMany({
-            orderBy: {
-                date: 'desc'
+            include: {
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
             }
         });
 
@@ -67,6 +72,9 @@ gameRouter.get('/:id', async (req, res) => {
 
             where: {
                 id
+            },
+            include: {
+                playersGame: true
             }
         })
         //verificar se o jogo existe
@@ -84,10 +92,13 @@ gameRouter.get('/:id', async (req, res) => {
 
 
 //dar update a um jogo via id
-gameRouter.put('/:id', async (req, res) => {
+gameRouter.put('/:id', authGuard, async (req, res) => {
 
     try {
+
+        
         const { id } = req.params;
+        //dados para atualizar
         const {
             teamA,
             teamB,
@@ -98,6 +109,20 @@ gameRouter.put('/:id', async (req, res) => {
             goalsB
         } = req.body;
 
+
+        const game = await prisma.game.findUnique({
+            where: { id },
+        });
+        if (!game) {
+            return res.status(404).json({ error: 'game not found' });
+        }
+        
+
+        //verificar se o user autenticado é o criado do jogo
+        if(game.createdById !== req.user.id){
+            return res.status(403).json({ error: 'you are not authorized to update this game' });
+        }
+        
         const updatedGame = await prisma.game.update({
             where: {
                 id
@@ -113,7 +138,11 @@ gameRouter.put('/:id', async (req, res) => {
             }
         });
 
-        res.status(200).json(updatedGame);
+        res.status(200).json({
+            message: 'Game updated successfully',
+            game: updatedGame
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'err while updating game' });
@@ -122,10 +151,23 @@ gameRouter.put('/:id', async (req, res) => {
 
 
 //apgar jogo
-gameRouter.delete('/:id', async (req, res) => {
+gameRouter.delete('/:id', authGuard, async (req, res) => {
 
     try {
         const {id}  = req.params;
+
+        const game = await prisma.game.findUnique({
+            where: {id},
+        })
+        if (!game) {
+            return res.status(404).json({ error: 'game not found' });   
+        }
+
+
+        //verificar se o user autenticado é o criador do jogo
+        if(game.createdById !== req.user.id){
+            return res.status(403).json({ error: 'you are not authorized to delete this game' });
+        }
 
         await prisma.game.delete({
             where: {
@@ -133,7 +175,7 @@ gameRouter.delete('/:id', async (req, res) => {
             }
         });
 
-        res.status(204).send();
+        res.status(200).json({ message: 'game deleted successfully' }); 
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'err while deleting game' });

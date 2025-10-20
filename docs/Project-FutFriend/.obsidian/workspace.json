@@ -25,16 +25,32 @@
             "id": "1d1e7ecad0b19aa3",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.9.14"
+                "file": "Funcionalidades.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.9.14"
+              "icon": "lucide-file",
+              "title": "Funcionalidades"
+            }
+          },
+          {
+            "id": "f26920385962ae49",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "fluxo auth.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "fluxo auth"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -177,10 +193,10 @@
       "command-palette:Abrir paleta de comando": false
     }
   },
-  "active": "1d1e7ecad0b19aa3",
+  "active": "f26920385962ae49",
   "lastOpenFiles": [
-    "Sem título.md",
     "Funcionalidades.md",
+    "fluxo auth.md",
     "FutFriend - O que representa.md"
   ]
 }
