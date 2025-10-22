@@ -241,8 +241,21 @@ model PlayersGame {
 
 Projeto académico desenvolvido por **Telmo Regalado**, aluno de CTESP - Desenvolvimento Web e Multimédia - IPVC-ESTG
 
-## Notas finais
+## Notas
 
 `* Todas as rotas foram testadas via Postman.`
 
-`* Pode ser facilmente expandido com mais estatísticas, chat entre jogadores ou até mesmo ranking de performance.`
+`* Pode ser facilmente expandido com mais estatísticas, chat entre jogadores ou até mesmo ranking de performance.`* 
+
+## Melhorias:
+
+`* Adicionar rate limit ou proteção contra brute-force no login (por ex. express-rate-limit), sito significa por exemplo: permitir no máximo 5 tentativas de login por 15 minutos.`* 
+
+`* Adicionar validação extra para password (requisitos mínimos de segurança). Ou seja, atualmente o sistema pede "min(6)". Isto significa que é fraco em termos de validações... — 123456 ou abcdef passam facilmente.`* 
+
+A solução:
+(Adicionar requisitos específicos como: pelo menos 8 caracteres)
+- 1 letra maiúscula
+- 1 letra minúscula
+- 1 número
+- 1 símbolo especial
