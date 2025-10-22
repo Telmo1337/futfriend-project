@@ -6,7 +6,7 @@ const userRouter = Router();
 
 
 //criar novo user
-userRouter.post('/', async (req, res) => {
+userRouter.post('/', async (req, res, next) => {
     try {
         //logica para criar novo user
         const {
@@ -33,29 +33,27 @@ userRouter.post('/', async (req, res) => {
             error: 'theres already a user with this email',
         });
         }
-        res.status(500).json({err: 'error creating user'})
+        next(err);
     }
 });
 
 
 
 //obter todos os users
-userRouter.get('/', async (req, res) => {
+userRouter.get('/', async (req, res, next) => {
     //logica
     try {
         //obter todos os users do banco de dados
         const users = await prisma.user.findMany();
         res.status(200).json(users);
     } catch (err) {
-        //erro handling
-        console.log(err);
-        res.status(500).send({ error: 'erro ao tentar aceder aos users' });
+        next(err);
     }
 })
 
 
 //obter user por id
-userRouter.get('/:id', async (req, res) => {
+userRouter.get('/:id', async (req, res,next) => {
     try{
         const {
             id
@@ -76,17 +74,14 @@ userRouter.get('/:id', async (req, res) => {
 
         res.status(200).json(user);
     } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            err: 'err getting user'
-        })
+        next(err);
     }
 });
 
 
 
 //atualizar user por id
-userRouter.put('/:id', async (req, res) => {
+userRouter.put('/:id', async (req, res,next) => {
     try {
         const {
             id
@@ -120,17 +115,14 @@ userRouter.put('/:id', async (req, res) => {
 
         res.status(200).json(updateUser);
     } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            err: 'error updating user'
-        });
+        next(err);
     }
 })
 
 
 
 //delete user por id
-userRouter.delete('/:id', async (req, res) => {
+userRouter.delete('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -153,9 +145,8 @@ userRouter.delete('/:id', async (req, res) => {
         message: "user deleted"
     })
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'err deleting user' });
-  }
+      next(err);
+    }
 });
 
 

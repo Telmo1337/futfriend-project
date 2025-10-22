@@ -62,3 +62,18 @@ typings/
 .next
 
 /generated/prisma
+
+# --- Sistema e IDEs ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.vscode/
+.idea/
+
+# --- Prisma (bases de dados e migrações locais) ---
+/prisma/dev.db
+/prisma/migrations/
+/prisma/generated/

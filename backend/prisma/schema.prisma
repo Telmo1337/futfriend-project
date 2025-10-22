@@ -13,63 +13,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/*tabela principal user tera as seguintes propriedades:
-id, email, name, password, createdAt, updatedAt, goals, victories, draws, losses
-e tambem gamesCreated e gamesParticipated
-*/
-model User {
-  id String @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  goals     Int      @default(0)
-  victories Int      @default(0)
-  losses    Int      @default(0)
-  draws     Int      @default(0)
- 
-  playersGame  PlayersGame[]
-  Game         Game[]        @relation("UserGames")
+/* --- ENUMS (novos) --- */
+enum GameState {
+  scheduled
+  ongoing
+  finished
 }
 
+enum Team {
+  teamA
+  teamB
+}
 
-/*tabela principal game tera as seguintes propriedades:
-id, teamA, teamB, goalsA, goalsB, state, date, location
-createdAt, updatedAt e tambem playersGame
+/* --- TABELA PRINCIPAL: USER --- */
+/*
+Contém as propriedades:
+id, email, name, password, createdAt, updatedAt, goals, victories, draws, losses
+e também os jogos criados e participações.
+*/
+model User {
+  id         String        @id @default(uuid())
+  email      String        @unique
+  name       String?
+  password   String
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  goals      Int           @default(0)
+  victories  Int           @default(0)
+  losses     Int           @default(0)
+  draws      Int           @default(0)
+
+  playersGame PlayersGame[]
+  Game         Game[]       @relation("UserGames")
+}
+
+/* --- TABELA PRINCIPAL: GAME --- */
+/*
+Contém as propriedades:
+id, teamA, teamB, goalsA, goalsB, state, date, location,
+createdAt, updatedAt e também os jogadores associados.
 */
 model Game {
   id          String        @id @default(uuid())
-  teamA    String
-  teamB    String
-  goalsA     Int      @default(0)
-  goalsB     Int      @default(0)
-  state     String   @default("scheduled") // scheduled, ongoing, finished
-  date      DateTime
-  location  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-   // quem criou o jogo
+  teamA       String
+  teamB       String
+  goalsA      Int           @default(0)
+  goalsB      Int           @default(0)
+  state       GameState     @default(scheduled) // ENUM substitui a string
+  date        DateTime
+  location    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  maxPlayersPerTeam Int   @default(5)
+  
+  // relação com o criador do jogo
   createdById String
   createdBy   User          @relation("UserGames", fields: [createdById], references: [id], onDelete: Cascade)
   playersGame PlayersGame[]
 }
 
-
-/*tabela intermédia playergames tera as seguintes propriedades:
-id, userId, gameId, team (teamA or teamB), score, goals, createdAt, updatedAt
-
+/* --- TABELA INTERMÉDIA: PLAYERSGAME --- */
+/*
+Relação N:N entre User e Game.
+Contém: id, userId, gameId, team (A ou B), score, goals, timestamps.
 */
 model PlayersGame {
-   id        String    @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
   gameId    String
-  team      String   // teamA or teamB
-  score     String? //"v", "d", "e" 
-  goals     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  team      Team      // agora usa o ENUM Team
+  score     String?   // "v" (vitória), "d" (derrota), "e" (empate)
+  goals     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)

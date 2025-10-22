@@ -14,7 +14,7 @@ const registerSchema = z.object({
 });
 
 //registo
-authRouter.post('/register', async (req, res) => {
+authRouter.post('/register', async (req, res, next) => {
   try {
 
      const result = registerSchema.safeParse(req.body);
@@ -49,8 +49,7 @@ authRouter.post('/register', async (req, res) => {
     res.status(201).json({ user: userWithoutPassword, token });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'error registering user' });
+    next(err);
   }
 });
 
@@ -62,7 +61,7 @@ const loginSchema = z.object({
 
 
 //login
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/login', async (req, res, next) => {
   try {
     const result = loginSchema.safeParse(req.body);
     if (!result.success) {
@@ -92,8 +91,7 @@ authRouter.post('/login', async (req, res) => {
 
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'error logging in' });
+    next(err);
   }
 });
 

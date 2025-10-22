@@ -1,25 +1,51 @@
-import { Routes, Route, NavLink } from "react-router-dom";
-import Home from "./pages/Home";
-import About from "./pages/About";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from './pages/Login.jsx'
+import Register from './pages/Register.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Games from './pages/Games.jsx'
+import GameDetails from './pages/GameDetails.jsx'
+
 
 function App() {
   return (
     <>
-      <nav className="">
-        <NavLink to="/" className={({ isActive }) => isActive ? "text-red-500" : "text-black"}>Início</NavLink> | 
-        <NavLink to="/about" className={({ isActive }) => isActive ? "text-red-500" : "text-black"}>Sobre</NavLink>
-      </nav>
-
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="*" element={<h1>404 - Página não encontrada</h1>} />
-      </Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Rotas protegidas */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/games"
+        element={
+          <ProtectedRoute>
+            <Games />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/games/:id"
+        element={
+          <ProtectedRoute>
+            <GameDetails />
+          </ProtectedRoute>
+        }
+      />
 
 
-      <div>
-        <h1 className="bg-amber-600">FutFriend</h1>
-      </div>
+      {/* Redirecionar tudo o resto */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
     </>
   );
 }

@@ -5,7 +5,7 @@ import { authGuard } from '../utils/auth.js';
 const gameRouter = Router();    
 
 //criar novo jogo apenas autenticados
-gameRouter.post('/', authGuard, async (req, res) => {
+gameRouter.post('/', authGuard, async (req, res, next) => {
     try {
         const {
             teamA,
@@ -30,15 +30,14 @@ gameRouter.post('/', authGuard, async (req, res) => {
 
         res.status(201).json(newGame);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'err while creating game' });
+        next(err);
     }
 });
 
 
 
 //obter todos os jogos
-gameRouter.get('/', async (req, res) => {
+gameRouter.get('/', async (req, res, next) => {
 
     try {
         const games = await prisma.game.findMany({
@@ -55,17 +54,17 @@ gameRouter.get('/', async (req, res) => {
 
         res.status(200).json(games);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'err while getting games' });
+        next(err);
     }
 });
 
 
 
 //obter jogo por id
-gameRouter.get('/:id', async (req, res) => {
+gameRouter.get('/:id', async (req, res, next) => {
     try {
 
+        
         const { id} = req. params;
 
         const game = await prisma.game.findUnique({
@@ -84,15 +83,14 @@ gameRouter.get('/:id', async (req, res) => {
 
         res.status(200).json(game);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'err while getting game by id' });
+        next(err);
     }
 });
 
 
 
 //dar update a um jogo via id
-gameRouter.put('/:id', authGuard, async (req, res) => {
+gameRouter.put('/:id', authGuard, async (req, res, next) => {
 
     try {
 
@@ -144,14 +142,13 @@ gameRouter.put('/:id', authGuard, async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'err while updating game' });
+        next(err);
     }
 })
 
 
 //apgar jogo
-gameRouter.delete('/:id', authGuard, async (req, res) => {
+gameRouter.delete('/:id', authGuard, async (req, res, next) => {
 
     try {
         const {id}  = req.params;
@@ -177,9 +174,11 @@ gameRouter.delete('/:id', authGuard, async (req, res) => {
 
         res.status(200).json({ message: 'game deleted successfully' }); 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'err while deleting game' });
+        next(err);
     }
 })
+
+    
+
 
 export default gameRouter;
