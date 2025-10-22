@@ -132,7 +132,7 @@ Authorization: Bearer {{token}}
 ###### Games
 
 - Criar um jogo novo:
-**POST /api/v1/auth/games** *(requer token JWT)*
+**POST /api/v1/games** *(requer token JWT)*
 ```json
 {
   "teamA": "Equipa A",
@@ -259,3 +259,6 @@ A solução:
 - 1 letra minúscula
 - 1 número
 - 1 símbolo especial
+
+
+`* Adicionar melhorias no gameRouter
