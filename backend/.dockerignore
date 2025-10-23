@@ -1,0 +1,14 @@
+# Ignorar dependências locais
+node_modules
+npm-debug.log
+
+# Ignorar volumes e ficheiros temporários
+mysql_data
+*.log
+
+# Ignorar configs e ficheiros de ambiente locais
+.env
+.env.*
+.git
+.gitignore
+.DS_Store
