@@ -1,7 +1,5 @@
 #!/bin/bash
-# ===============================================
-# Script to stop the Docker environment for FutFriend
-# ===============================================
+# script para parar o ambiente Docker para o projeto FutFriend
 
 echo "=== Stopping Docker FutFriend Environment ==="
 
@@ -12,7 +10,7 @@ docker compose down
 echo "=== Current container status ==="
 docker ps
 
-echo "🧹 All FutFriend containers stopped successfully!"
+echo " All FutFriend containers stopped successfully!"
 
 
 #permission to run: chmod +x stop-docker.sh

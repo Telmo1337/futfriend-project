@@ -1,8 +1,5 @@
 # Futfriend – API Backend
 
-> Aplicação web full stack para gestão de jogos de futebol entre amigos.  
-> Desenvolvido por **Telmo Regalado** — CTeSP Desenvolvimento Web e Multimédia (IPVC)
-
 ---
 
 ## Descrição

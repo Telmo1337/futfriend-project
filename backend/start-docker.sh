@@ -1,7 +1,5 @@
 #!/bin/bash
-# ===============================================
-# Script to start the Docker environment for FutFriend
-# ===============================================
+# script para inciar o ambiente Docker para o projeto FutFriend
 
 echo "=== Starting Docker FutFriend Environment ==="
 

@@ -3,6 +3,8 @@ import { Router } from 'express';
 import { prisma } from '../db/prisma.js';
 import { hashPassword, checkPassword, generateToken } from '../utils/auth.js';
 import {z} from 'zod';
+import { authGuard } from "../utils/auth.js";
+
 
 const authRouter = Router();
 
@@ -95,9 +97,22 @@ authRouter.post('/login', async (req, res, next) => {
   }
 });
 
+authRouter.get("/verify", authGuard, async (req, res) => {
+  try {
+    // Se chegou até aqui, o token é válido
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { id: true, name: true, email: true }, // devolve dados básicos
+    });
 
+    if (!user) return res.status(404).json({ error: "user not found" });
 
-
+    res.status(200).json({ user, valid: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "internal server error" });
+  }
+});
 
 
 export default authRouter;
