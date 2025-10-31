@@ -68,6 +68,7 @@ playersGameRouter.get('/game/:gameId/players', async (req, res, next) => {
         const { gameId } = req.params;
         const playersGames = await prisma.playersGame.findMany({
             where: { gameId },
+            include: { user: true },
         });
         res.status(200).json(playersGames);
     } catch (err) {

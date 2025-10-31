@@ -6,7 +6,15 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "prisma:generate": "npx prisma generate"
+    "prisma:generate": "npx prisma generate",
+    "docker:dev": "docker compose up --build",
+    "docker:up": "docker compose up",
+    "docker:build": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:restart": "docker compose down && docker compose up --build",
+    "docker:logs": "docker compose logs -f",
+    "docker:clean": "docker system prune -af && docker volume prune -f",
+    "docker:ps": "docker ps"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
