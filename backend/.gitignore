@@ -39,6 +39,7 @@ typings/
 .env
 .env.*
 .env.local
+!*.example
 
 # -----------------------------
 #  NEXT / FRONTEND OUTPUT (FUTURO)
