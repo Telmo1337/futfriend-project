@@ -44,3 +44,6 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "`n === Docker FutFriend Environment Started ==="
 Write-Host "Backend is available at: http://localhost:5500"
+Write-Host "Frontend is available at: http://localhost:5173"
+Write-Host "`nTip: If you get permission errors, run:"
+Write-Host "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"  
