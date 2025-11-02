@@ -11,14 +11,16 @@ userRouter.post('/', async (req, res, next) => {
         //logica para criar novo user
         const {
             email,
-            name,
+            firstName,
+            lastName,
             password
         } = req.body;
         //criar user no banco de dados
         const newUser = await prisma.user.create({
             data: {
                 email,
-                name,
+                firstName,
+                lastName,
                 password
             },
         });
@@ -89,7 +91,8 @@ userRouter.put('/:id', async (req, res,next) => {
 
         const {
             email,
-            name,
+            firstName,
+            lastName,
             password,
             goals,
             victories,
@@ -104,7 +107,8 @@ userRouter.put('/:id', async (req, res,next) => {
 
             data: {
                 email,
-                name,
+                firstName,
+                lastName,
                 password,
                 goals,
                 victories,

@@ -1,41 +1,45 @@
 //para login e registo (sem a sidebar)
-import {Box, Paper, Typography} from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
-const AuthLayout = ({children}) => {
+const AuthLayout = ({ children }) => {
 
     const title = "FutFriend"
 
-  return (
-    <Box
-        sx={{
-            minHeight: "100vh",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            bgcolor: "background.default",
-            backgroundImage: "linear-gradient(135deg, #f0f2f5 0%, #dce3eb 100%)"
-        }}
-    >
-        <Paper elevation={6}
+    return (
+        <Box
             sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                p: 4,
-                borderRadius: 4,
-                width: "100%",
-                maxWidth: 450,
-                backgroundColor: "white",
+                height: "100vh",
+                bgcolor: "background.default",
+
             }}
-        />
-        <Typography variant="h4" fontWeight="bold" mb={2} >
-            {title}
-        </Typography>
-            {/*injetar form*/}
-        {children}
-    </Box>
-  )
+        >
+
+            <Paper elevation={6} sx={{
+                p: { xs: 3, md: 4 },
+                width: { xs: "90%", sm: 400 },
+                maxWidth: "95vw",
+                boxSizing: "border-box",
+                borderRadius: 3,
+            }}>
+                <Typography
+                    variant="h4"
+                    align="center"
+                    mb={3}
+                    sx={{ fontSize: { xs: "1.8rem", sm: "2.2rem" } }}
+                >
+                    {title}
+                </Typography>
+                {/*injetar form*/}
+
+                {children}
+            </Paper>
+
+        </Box>
+    )
 }
 
 export default AuthLayout

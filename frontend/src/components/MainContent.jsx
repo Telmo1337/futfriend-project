@@ -6,7 +6,6 @@ import Profile from "../views/Profile";
 import Notifications from "../views/Notifications";
 import Help from "../views/Help";
 import Settings from "../views/Settings";
-import Logout from "../views/Logout";
 
 //animações
 import { motion } from "framer-motion";
@@ -28,7 +27,7 @@ const MainContent = ({ tab }) => {
         {tab === 3 && <Notifications />}
         {tab === 4 && <Help />}
         {tab === 5 && <Settings />}
-        {tab === 6 && <Logout />}
+    
       </Box>
     </motion.div>
   );

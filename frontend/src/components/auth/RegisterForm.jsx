@@ -9,7 +9,7 @@ const title = "Criar conta";
 const RegisterForm = () => {
 
     const navigate = useNavigate();
-    const [form, setForm] = useState({ name: "", email: "", password: "" });
+    const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
 
@@ -17,6 +17,7 @@ const RegisterForm = () => {
         e.preventDefault();
 
         try {
+            console.log("credenciais: ", form)
             await API.post("/auth/register", form);
 
             //sucesso
@@ -35,34 +36,53 @@ const RegisterForm = () => {
 
 
     //impedir utilizador crie conta enquanto os campos estao vazios
-    const isDisabled = !form.name || !form.email || !form.password;
+    const isDisabled = !form.firstName || !form.lastName || !form.email || !form.password;
 
     return (
-        <Paper elevation={3} sx={{
+        <Box sx={{
             p: 4,
-            maxWidth: 400,
-            margin: "auto",
-            mt: 10,
-            borderRadius: 3,
-        }}
-        >
+            boxSizing: "border-box",
+
+        }}>
             <Typography variante="h5" align="center" mb={2}>
                 {title}
             </Typography>
+
             <Box component="form" onSubmit={handleSubmit}>
+
                 <TextField
+                    helperText={error ? "" : "Por favor, insira o seu primeiro nome"}
+                    required
+                    size="small"
                     fullWidth
-                    label="Nome"
+                    label="Primeiro Nome"
                     type="text"
                     margin="normal"
-                    value={form.name}
+                    value={form.firstName}
                     onChange={(e) => {
                         setError("");
-                        setForm({...form, name: e.target.value});
+                        setForm({ ...form, firstName: e.target.value });
+                    }}
+                />
+                <TextField
+                    helperText={error ? "" : "Qual o seu apelido?"}
+                    required
+                    size="small"
+                    fullWidth
+                    label="Último Nome"
+                    type="text"
+                    margin="normal"
+                    value={form.lastName}
+                    onChange={(e) => {
+                        setError("");
+                        setForm({ ...form, lastName: e.target.value });
                     }}
                 />
 
                 <TextField
+                    helperText={error ? "" : "Por favor, insira o seu email válido"}
+                    required
+                    size="small"
                     fullWidth
                     label="Email"
                     type="email"
@@ -70,11 +90,14 @@ const RegisterForm = () => {
                     value={form.email}
                     onChange={(e) => {
                         setError("");
-                        setForm({...form, email: e.target.value})
+                        setForm({ ...form, email: e.target.value })
                     }}
                 />
 
                 <TextField
+                    helperText={error ? "" : "Mínimo 6 caracteres"}
+                    required
+                    size="small"
                     fullWidth
                     label="Password"
                     type="password"
@@ -82,24 +105,24 @@ const RegisterForm = () => {
                     value={form.password}
                     onChange={(e) => {
                         setError("");
-                        setForm({...form, password: e.target.value})
+                        setForm({ ...form, password: e.target.value })
                     }}
                 />
                 {error && (
-                    <Alert severity="error" sx={{mt:2}}>
+                    <Alert severity="error" sx={{ mt: 2 }}>
                         {error}
                     </Alert>
                 )}
 
                 {success && (
-                    <Alert severity="success" sx={{mt:2}}>
+                    <Alert severity="success" sx={{ mt: 2 }}>
                         {success}
                     </Alert>
                 )}
 
-                <BtnPrimary title="Registar" type="submit" disabled={isDisabled}/>
+                <BtnPrimary variant="contained" title="Registar" type="submit" disabled={isDisabled} sx={{ mt: 2 }} />
             </Box>
-        </Paper>
+        </Box>
     )
 }
 

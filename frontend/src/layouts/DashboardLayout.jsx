@@ -5,6 +5,9 @@ import MainContent from "../components/MainContent";
 
 const DashboardLayout = () => {
   const [tab, setTab] = useState(0); // controla qual página aparece
+  
+
+
 
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "background.default" }}>

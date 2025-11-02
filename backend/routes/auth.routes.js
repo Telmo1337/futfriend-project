@@ -11,7 +11,8 @@ const authRouter = Router();
 //validação registo com zod
 const registerSchema = z.object({
   email: z.string().email('invalid email'),
-  name: z.string().min(2, 'name short'),
+  firstName: z.string().min(2, 'first name short'),
+  lastName: z.string().min(2, 'last name short'),
   password: z.string().min(6, 'atleast 6 chars')
 });
 
@@ -24,7 +25,7 @@ authRouter.post('/register', async (req, res, next) => {
       return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
 
-    const { email, name, password } = result.data;
+    const { email, firstName, lastName, password } = result.data;
 
     // verificar se já existe utilizador
     const existingUser = await prisma.user.findUnique({
@@ -40,7 +41,7 @@ authRouter.post('/register', async (req, res, next) => {
 
     // criar novo utilizador
     const user = await prisma.user.create({
-      data: { email, name, password: hashedPassword },
+      data: { email, firstName, lastName, password: hashedPassword },
     });
 
     // criar token JWT
@@ -77,15 +78,16 @@ authRouter.post('/login', async (req, res, next) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'user not found' });
+      return res.status(404).json({ error: 'Email ou password incorreta.' });
     }
 
     const valid = await checkPassword(password, user.password);
     if (!valid) {
-      return res.status(401).json({ error: 'incorrect password' });
+      console.log("email ou password incorreta")
+      return res.status(401).json({ error: 'Email ou password incorreta.' });
     }
 
-    const token = await generateToken(user);
+    const token = generateToken(user);
 
     const { password: _, ...userWithoutPassword } = user;
 
@@ -102,7 +104,7 @@ authRouter.get("/verify", authGuard, async (req, res) => {
     // Se chegou até aqui, o token é válido
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: { id: true, name: true, email: true }, // devolve dados básicos
+      select: { id: true, firstName: true, lastName: true, email: true }, // devolve dados básicos
     });
 
     if (!user) return res.status(404).json({ error: "user not found" });

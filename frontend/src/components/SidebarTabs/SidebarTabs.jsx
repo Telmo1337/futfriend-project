@@ -3,6 +3,7 @@ import SidebarTopTabs from "./SidebarTopTabs";
 import SidebarBottomTabs from "./SidebarBottomTabs";
 
 const SidebarTabs = ({ tab, setTab }) => {
+  
   const handleChange = (_, newValue) => setTab(newValue);
 
   return (
@@ -16,8 +17,16 @@ const SidebarTabs = ({ tab, setTab }) => {
         boxShadow: 1,
       }}
     >
-      <SidebarTopTabs value={tab} onChange={handleChange} />
-      <SidebarBottomTabs value={tab} onChange={handleChange} />
+       <SidebarTopTabs
+        value={tab >= 0 && tab <= 3 ? tab : false}
+        onChange={handleChange}
+      />
+
+      {/* Tabs de baixo — só recebe valores de 4 a 6 */}
+      <SidebarBottomTabs
+        value={tab >= 4 && tab <= 6 ? tab : false}
+        onChange={handleChange}
+      />
     </Box>
   );
 };
