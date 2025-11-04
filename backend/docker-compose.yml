@@ -35,14 +35,6 @@ services:
       - .:/app
       - /app/node_modules
       - /app/node_modules/.prisma
-
-  frontend:
-    build: ../frontend
-    container_name: futfriend-frontend
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
     
 networks:
   futfriend-net:

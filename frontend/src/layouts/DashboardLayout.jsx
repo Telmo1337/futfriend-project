@@ -1,11 +1,19 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SidebarTabs from "../components/SidebarTabs/SidebarTabs";
 import MainContent from "../components/MainContent";
 
 const DashboardLayout = () => {
-  const [tab, setTab] = useState(0); // controla qual página aparece
+
   
+  const [tab, setTab] = useState(() => {
+    return parseInt(localStorage.getItem("dashboardTab")) || 0;
+  }); 
+
+
+  useEffect(() => {
+    localStorage.setItem("dashboardTab", tab);
+  }, [tab]);
 
 
 
