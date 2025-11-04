@@ -1,158 +1,130 @@
-import { Router } from 'express';
-import {prisma } from '../db/prisma.js';
-
+import { Router } from "express";
+import { prisma } from "../db/prisma.js";
+import { authGuard } from "../utils/auth.js";
 
 const userRouter = Router();
 
+//  Criar novo utilizador
+userRouter.post("/", async (req, res, next) => {
+  try {
+    const { email, firstName, lastName, password } = req.body;
 
-//criar novo user
-userRouter.post('/', async (req, res, next) => {
-    try {
-        //logica para criar novo user
-        const {
-            email,
-            firstName,
-            lastName,
-            password
-        } = req.body;
-        //criar user no banco de dados
-        const newUser = await prisma.user.create({
-            data: {
-                email,
-                firstName,
-                lastName,
-                password
-            },
-        });
+    const newUser = await prisma.user.create({
+      data: { email, firstName, lastName, password },
+    });
 
-        res.status(201).json(newUser)
-    } catch(err) {
-        console.log(err)
-        
-        if (err.code === 'P2002') {
-        // Prisma error code for unique constraint violation
-        return res.status(400).json({
-            error: 'theres already a user with this email',
-        });
-        }
-        next(err);
+    res.status(201).json(newUser);
+  } catch (err) {
+    if (err.code === "P2002") {
+      return res.status(400).json({ error: "Já existe um utilizador com este email." });
     }
+    next(err);
+  }
+});
+
+//  Estatísticas do utilizador autenticado
+userRouter.get("/me/stats", authGuard, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        goals: true,
+        victories: true,
+        losses: true,
+        draws: true,
+      },
+    });
+
+    res.json(user);
+  } catch (err) {
+    console.error("Erro em /me/stats:", err);
+    next(err);
+  }
+});
+
+//  Pesquisa rápida por nome ou email (precisa vir ANTES de /:id)
+// pesquisa rápida por nome ou email
+userRouter.get("/search", authGuard, async (req, res, next) => {
+  try {
+    const query = req.query.q?.trim() || "";
+    if (!query) return res.json([]);
+
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          { email: { contains: query } },
+          { firstName: { contains: query } },
+          { lastName: { contains: query } },
+        ],
+      },
+      select: { id: true, firstName: true, lastName: true, email: true },
+      take: 5,
+    });
+
+    res.json(users);
+  } catch (err) {
+    console.error(" Erro em /users/search:", err);
+    next(err);
+  }
 });
 
 
-
-//obter todos os users
-userRouter.get('/', async (req, res, next) => {
-    //logica
-    try {
-        //obter todos os users do banco de dados
-        const users = await prisma.user.findMany();
-        res.status(200).json(users);
-    } catch (err) {
-        next(err);
-    }
-})
-
-
-//obter user por id
-userRouter.get('/:id', async (req, res,next) => {
-    try{
-        const {
-            id
-        } = req.params;
-
-        const user = await prisma.user.findUnique({
-            where: {
-                id
-            },
-        });
-
-        //se user nao for encontrado
-        if(!user){
-            return res.status(404).json({
-                err: 'user not found'
-            });
-        }
-
-        res.status(200).json(user);
-    } catch (err) {
-        next(err);
-    }
+//  Obter todos os utilizadores
+userRouter.get("/", async (req, res, next) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
 });
 
+//  Obter utilizador por ID (vem DEPOIS das rotas acima)
+userRouter.get("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.user.findUnique({ where: { id } });
 
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-//atualizar user por id
-userRouter.put('/:id', async (req, res,next) => {
-    try {
-        const {
-            id
-        } = req.params;
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+});
 
-        const {
-            email,
-            firstName,
-            lastName,
-            password,
-            goals,
-            victories,
-            losses,
-            draws
-        } = req.body;
+//  Atualizar utilizador por ID
+userRouter.put("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { email, firstName, lastName, password, goals, victories, losses, draws } = req.body;
 
-        const updateUser = await prisma.user.update({
-            where: {
-                id
-            },
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { email, firstName, lastName, password, goals, victories, losses, draws },
+    });
 
-            data: {
-                email,
-                firstName,
-                lastName,
-                password,
-                goals,
-                victories,
-                losses,
-                draws
-            }
-        });
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    next(err);
+  }
+});
 
-        res.status(200).json(updateUser);
-    } catch (err) {
-        next(err);
-    }
-})
-
-
-
-//delete user por id
-userRouter.delete('/:id', async (req, res, next) => {
+//  Apagar utilizador
+userRouter.delete("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // apgar as participations do user
-    await prisma.playersGame.deleteMany({
-      where: { userId: id },
-    });
+    await prisma.playersGame.deleteMany({ where: { userId: id } });
+    await prisma.game.deleteMany({ where: { createdById: id } });
+    await prisma.user.delete({ where: { id } });
 
-    //apga jogos criados por ele
-    await prisma.game.deleteMany({
-      where: { createdById: id },
-    });
-
-    // apagar o user apenas
-    await prisma.user.delete({
-      where: { id },
-    });
-
-    res.status(200).json({
-        message: "user deleted"
-    })
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
-      next(err);
-    }
+    next(err);
+  }
 });
-
-
 
 export default userRouter;

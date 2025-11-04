@@ -1,28 +1,27 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../../../api/axios";
 
-const useGames = () => {
+export default function useGames() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const res = await API.get("/games");
-        setGames(res.data);
-      } catch (err) {
-        console.log(err);
-        setError("Erro ao carregar os jogos.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGames();
+  const fetchGames = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await API.get("/games");
+      setGames(res.data);
+    } catch (err) {
+      console.error("Erro ao carregar jogos:", err);
+      setError(err.response?.data?.error || "Erro ao carregar jogos.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { games, loading, error };
-};
+  useEffect(() => {
+    fetchGames();
+  }, [fetchGames]);
 
-export default useGames;
+  return { games, loading, error, fetchGames, setGames };
+}

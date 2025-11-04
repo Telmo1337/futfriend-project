@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
-import SidebarTabs from "../components/SidebarTabs/SidebarTabs";
-import MainContent from "../components/MainContent";
+import { SidebarTabs } from "../components/SidebarTabs"; 
+import MainContent from "./DashboardContent";
 
 const DashboardLayout = () => {
 

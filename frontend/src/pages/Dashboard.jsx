@@ -1,16 +1,53 @@
-import { Typography } from "@mui/material"
-import Box from '@mui/material/Box';
-
+import { Box, Typography, Grid } from "@mui/material";
+import { LoadingState } from "../components/UI"; // 
+import useDashboardStats from "../components/hooks/useDashboardStats";
+import StatCard from "../components/dashboard/StatCard";
 
 const Dashboard = () => {
-  return (
-    <>
-      <Box className="fixed"> 
-        <Typography variant="h4"> Dashboard</Typography>
-        <Typography >Bem-vindo ao painel principal!</Typography>
-      </Box>
-    </>
-  )
-}
+  const { stats, loading, error, user } = useDashboardStats();
 
-export default Dashboard
+  //  Estados de carregamento / erro
+  if (loading) return <LoadingState message="A carregar estatísticas..." />;
+  if (error)
+    return (
+      <Typography color="error" textAlign="center" mt={4}>
+        {error}
+      </Typography>
+    );
+  if (!stats)
+    return (
+      <Typography textAlign="center" mt={4}>
+        Sem dados disponíveis
+      </Typography>
+    );
+
+  //  Conteúdo principal
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" mb={2}>
+        Olá, {user?.firstName} 👋
+      </Typography>
+
+      <Typography variant="subtitle1" mb={4}>
+        Estatísticas gerais
+      </Typography>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard title="Vitórias" value={stats.victories ?? 0} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard title="Derrotas" value={stats.losses ?? 0} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard title="Empates" value={stats.draws ?? 0} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard title="Golos" value={stats.goals ?? 0} />
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default Dashboard;

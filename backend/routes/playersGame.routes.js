@@ -10,7 +10,7 @@ playersGameRouter.post('/', async (req, res, next) => {
   try {
     const { userId, gameId, team } = req.body;
 
-    // 1️⃣ verificar se user e jogo existem
+    // verificar se user e jogo existem
     const [user, game] = await Promise.all([
       prisma.user.findUnique({ where: { id: userId } }),
       prisma.game.findUnique({ where: { id: gameId } })
@@ -48,7 +48,7 @@ playersGameRouter.post('/', async (req, res, next) => {
       return res.status(400).json({ error: 'Jogador já está inscrito neste jogo.' });
     }
 
-    // 7️⃣ criar relação entre jogador e jogo
+    //  criar relação entre jogador e jogo
     const playerGame = await prisma.playersGame.create({
       data: { userId, gameId, team },
     });

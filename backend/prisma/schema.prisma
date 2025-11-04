@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +7,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/* --- ENUMS (novos) --- */
+/// --- TABELA PRINCIPAL: USER ---
+/// Contém as propriedades:
+/// id, email, name, password, createdAt, updatedAt, goals, victories, draws, losses
+/// e também os jogos criados e participações.
+model User {
+  id          String        @id @default(uuid())
+  email       String        @unique
+  password    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  goals       Int           @default(0)
+  victories   Int           @default(0)
+  losses      Int           @default(0)
+  draws       Int           @default(0)
+  firstName   String
+  lastName    String
+  Game        Game[]        @relation("UserGames")
+  playersGame PlayersGame[]
+}
+
+/// --- TABELA PRINCIPAL: GAME ---
+/// Contém as propriedades:
+/// id, teamA, teamB, goalsA, goalsB, state, date, location,
+/// createdAt, updatedAt e também os jogadores associados.
+model Game {
+  id                String        @id @default(uuid())
+  teamA             String
+  teamB             String
+  goalsA            Int           @default(0)
+  goalsB            Int           @default(0)
+  state             GameState     @default(scheduled)
+  date              DateTime
+  location          String
+  type              GameType      @default(FIVE_A_SIDE)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  maxPlayersPerTeam Int           @default(5)
+  createdById       String
+  createdBy         User          @relation("UserGames", fields: [createdById], references: [id], onDelete: Cascade)
+  playersGame       PlayersGame[]
+
+  @@index([createdById], map: "Game_createdById_fkey")
+}
+
+/// --- TABELA INTERMÉDIA: PLAYERSGAME ---
+/// Relação N:N entre User e Game.
+/// Contém: id, userId, gameId, team (A ou B), score, goals, timestamps.
+model PlayersGame {
+  id        String   @id @default(uuid())
+  userId    String
+  gameId    String
+  team      Team
+  score     String?
+  goals     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+  @@index([gameId], map: "PlayersGame_gameId_fkey")
+}
+
+/// --- ENUMS (novos) ---
 enum GameState {
   scheduled
   ongoing
@@ -25,71 +82,9 @@ enum Team {
   teamB
 }
 
-/* --- TABELA PRINCIPAL: USER --- */
-/*
-Contém as propriedades:
-id, email, name, password, createdAt, updatedAt, goals, victories, draws, losses
-e também os jogos criados e participações.
-*/
-model User {
-  id         String        @id @default(uuid())
-  email      String        @unique
-  firstName  String
-  lastName   String
-  password   String
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  goals      Int           @default(0)
-  victories  Int           @default(0)
-  losses     Int           @default(0)
-  draws      Int           @default(0)
-
-  playersGame PlayersGame[]
-  Game         Game[]       @relation("UserGames")
+enum GameType {
+  FIVE_A_SIDE
+  SEVEN_A_SIDE
+  ELEVEN_A_SIDE
 }
 
-/* --- TABELA PRINCIPAL: GAME --- */
-/*
-Contém as propriedades:
-id, teamA, teamB, goalsA, goalsB, state, date, location,
-createdAt, updatedAt e também os jogadores associados.
-*/
-model Game {
-  id          String        @id @default(uuid())
-  teamA       String
-  teamB       String
-  goalsA      Int           @default(0)
-  goalsB      Int           @default(0)
-  state       GameState     @default(scheduled) // ENUM substitui a string
-  date        DateTime
-  location    String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  maxPlayersPerTeam Int   @default(5)
-  
-  // relação com o criador do jogo
-  createdById String
-  createdBy   User          @relation("UserGames", fields: [createdById], references: [id], onDelete: Cascade)
-  playersGame PlayersGame[]
-}
-
-/* --- TABELA INTERMÉDIA: PLAYERSGAME --- */
-/*
-Relação N:N entre User e Game.
-Contém: id, userId, gameId, team (A ou B), score, goals, timestamps.
-*/
-model PlayersGame {
-  id        String    @id @default(uuid())
-  userId    String
-  gameId    String
-  team      Team      // agora usa o ENUM Team
-  score     String?   // "v" (vitória), "d" (derrota), "e" (empate)
-  goals     Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, gameId])
-}
