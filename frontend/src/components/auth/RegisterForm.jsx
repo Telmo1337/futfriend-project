@@ -1,7 +1,10 @@
-import { Box, Typography, Alert, Paper } from "@mui/material";
-import BtnPrimary from "../UI/BtnPrimary";
-import RegisterFields from "./RegisterFields";
-import useRegisterForm from "./useRegisterForm";
+import { Box, Typography, Alert, Paper, Button } from "@mui/material";
+
+// Components
+import RegisterFields from "@/components/auth/RegisterFields";
+
+//hooks
+import useRegisterForm from "@/components/auth/hooks/useRegisterForm";
 
 const RegisterForm = () => {
   const { form, handleChange, handleSubmit, error, success, isDisabled } =
@@ -31,13 +34,15 @@ const RegisterForm = () => {
           </Alert>
         )}
 
-        <BtnPrimary
+        <Button
           variant="contained"
-          title="Registar"
           type="submit"
           disabled={isDisabled}
-          sx={{ mt: 2 }}
-        />
+          fullWidth
+          sx={{ mt: 2, py: 1.2 }}
+        >
+          Registar
+        </Button>
       </Box>
     </Paper>
   );

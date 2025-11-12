@@ -1,7 +1,11 @@
-import { Box, Typography, Alert, Paper } from "@mui/material";
-import BtnPrimary from "../UI/BtnPrimary";
-import LoginFields from "./LoginFields";
-import useLoginForm from "./useLoginForm";
+import { Box, Typography, Alert, Paper, Button } from "@mui/material";
+
+// Components
+import LoginFields from "@/components/auth/LoginFields";
+
+
+//hooks
+import useLoginForm from "@/components/auth/hooks/useLoginForm";
 
 const LoginForm = () => {
   const { form, error, handleChange, handleSubmit } = useLoginForm();
@@ -25,12 +29,14 @@ const LoginForm = () => {
           </Alert>
         )}
 
-        <BtnPrimary
-          variant="contained"
-          title="Entrar"
+        <Button
           type="submit"
-          sx={{ mt: 2 }}
-        />
+          variant="contained"
+          fullWidth
+          sx={{ mt: 2, py: 1.2 }}
+        >
+          Entrar
+        </Button>
       </Box>
     </Paper>
   );

@@ -1,7 +1,13 @@
 import { Box, Typography, Grid } from "@mui/material";
-import { LoadingState } from "../components/UI"; // 
-import useDashboardStats from "../components/hooks/useDashboardStats";
-import StatCard from "../components/dashboard/StatCard";
+
+//components UI
+import { LoadingState } from "@/components/UI"; 
+
+//components
+import { StatCard } from "@/views/Dashboard/components";
+
+//hooks
+import useDashboardStats from "@/views/Dashboard/hooks/useDashboardStats";
 
 const Dashboard = () => {
   const { stats, loading, error, user } = useDashboardStats();

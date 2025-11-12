@@ -118,9 +118,7 @@ gameRouter.get("/:id", async (req, res, next) => {
     next(err);
   }
 });
-/* 
-    Atualizar jogo
-    */
+
 gameRouter.put("/:id", authGuard, async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -135,17 +133,27 @@ gameRouter.put("/:id", authGuard, async (req, res, next) => {
         .json({ error: "Não está autorizado a editar este jogo." });
     }
 
+    //  Atualiza apenas campos definidos
+    const updates = {};
+    if (teamA !== undefined) updates.teamA = teamA;
+    if (teamB !== undefined) updates.teamB = teamB;
+    if (location !== undefined) updates.location = location;
+    if (state !== undefined) updates.state = state;
+    if (goalsA !== undefined) updates.goalsA = Number(goalsA);
+    if (goalsB !== undefined) updates.goalsB = Number(goalsB);
+
+
+    if (date !== undefined) {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: "Data inválida." });
+      }
+      updates.date = parsedDate;
+    }
+
     const updatedGame = await prisma.game.update({
       where: { id },
-      data: {
-        teamA,
-        teamB,
-        date: new Date(date),
-        location,
-        state,
-        goalsA,
-        goalsB,
-      },
+      data: updates,
     });
 
     res.status(200).json({
@@ -153,6 +161,7 @@ gameRouter.put("/:id", authGuard, async (req, res, next) => {
       game: updatedGame,
     });
   } catch (err) {
+    console.error("Erro ao atualizar jogo:", err);
     next(err);
   }
 });

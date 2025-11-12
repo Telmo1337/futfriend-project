@@ -1,16 +1,17 @@
 import { Tabs, Tab, Box } from "@mui/material";
+
+// Icons
 import HomeIcon from "@mui/icons-material/Home";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-import FF from "../../assets/FF.png";
+// Logo
+import FF from "@/assets/FF.png";
 
 
 
 const SidebarTopTabs = ({ value, onChange }) => {
-
-
 
 
   return (

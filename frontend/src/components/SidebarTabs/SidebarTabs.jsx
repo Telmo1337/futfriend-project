@@ -1,6 +1,9 @@
 import { Box } from "@mui/material";
-import SidebarTopTabs from "./SidebarTopTabs";
-import SidebarBottomTabs from "./SidebarBottomTabs";
+
+
+// Components
+import SidebarTopTabs from "@/components/SidebarTabs/SidebarTopTabs";
+import SidebarBottomTabs from "@/components/SidebarTabs/SidebarBottomTabs";
 
 const SidebarTabs = ({ tab, setTab }) => {
   

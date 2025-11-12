@@ -1,15 +1,20 @@
 import { Routes, Route } from "react-router-dom";
 
-import AuthLayout from "../layouts/AuthLayout";
-import DashboardLayout from "../layouts/DashboardLayout";
+// Layouts
+import AuthLayout from "@/layouts/AuthLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 
-import ProtectedRoutes from "../routes/ProtectedRoutes";
-import HomeRoute from "../routes/HomeRoute";
+// Routes (guards)
+import ProtectedRoutes from "@/routes/ProtectedRoutes";
+import HomeRoute from "@/routes/HomeRoute";
 
-import LoginForm from "../components/auth/LoginForm";
-import RegisterForm from "../components/auth/RegisterForm";
+// Auth Components
+import LoginForm from "@/components/auth/LoginForm";
+import RegisterForm from "@/components/auth/RegisterForm";
 
-import NoFound from "../pages/NoFound";
+// Pages
+import NoFound from "@/pages/NoFound";
+
 
 const AppRoutes = () => {
   return (

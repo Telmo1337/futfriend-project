@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import API from "../../api/axios";
+import useAuth from "../../hooks/useAuth";
+import API from "../../../api/axios";
 
 export default function useRegisterForm() {
   const navigate = useNavigate();

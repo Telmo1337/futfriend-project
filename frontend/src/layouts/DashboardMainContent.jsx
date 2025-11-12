@@ -3,8 +3,8 @@ import { Box } from "@mui/material";
 import { motion } from "framer-motion";
 
 // importar views centralizadas
-import { Games, Profile, Notifications, Help, Settings } from "../views";
-import Dashboard from "../pages/Dashboard";
+import { Dashboard, Games, Profile, Notifications, Help, Settings } from "@/views";
+
 
 const viewMap = {
   0: <Dashboard />,
@@ -15,7 +15,7 @@ const viewMap = {
   5: <Settings />,
 };
 
-const MainContent = ({ tab }) => {
+const DashboardMainContent = ({ tab }) => {
   const CurrentView = viewMap[tab] || <Dashboard />;
 
   return (
@@ -32,4 +32,4 @@ const MainContent = ({ tab }) => {
   );
 };
 
-export default MainContent;
+export default DashboardMainContent;

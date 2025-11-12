@@ -1,4 +1,4 @@
-import BtnPrimary from "../components/UI/BtnPrimary";
+// Components
 import { Box, Typography } from "@mui/material";
 
 const NotFound = () => {
@@ -41,19 +41,15 @@ const NotFound = () => {
       </Typography>
 
       
-      <BtnPrimary
-        variant="contained"
-        title="Voltar para o início"
-        to="/"
-        sx={{
-          mt: { xs: 2, md: 3 },
-          maxWidth: 220,
-          width: "100%",
-          fontSize: { xs: "0.9rem", md: "1rem" },
-          py: 1.2,
-          "&:hover": { bgcolor: "primary.dark" },
-        }}
-      />
+      <Button
+          variant="contained"
+          type="submit"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2, py: 1.2 }}
+        >
+         Voltar para o início...
+        </Button>
     </Box>
   );
 };
