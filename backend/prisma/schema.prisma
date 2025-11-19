@@ -23,6 +23,7 @@ model User {
   draws       Int           @default(0)
   firstName   String
   lastName    String
+  nickName    String        @unique
   Game        Game[]        @relation("UserGames")
   playersGame PlayersGame[]
 }

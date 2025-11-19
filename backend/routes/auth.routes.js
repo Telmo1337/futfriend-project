@@ -13,6 +13,7 @@ const registerSchema = z.object({
   email: z.string().email('invalid email'),
   firstName: z.string().min(2, 'first name short'),
   lastName: z.string().min(2, 'last name short'),
+  nickName: z.string().min(2, 'nick name short'),
   password: z.string().min(6, 'atleast 6 chars')
 });
 
@@ -25,7 +26,7 @@ authRouter.post('/register', async (req, res, next) => {
       return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
 
-    const { email, firstName, lastName, password } = result.data;
+    const { email, firstName, lastName, nickName, password } = result.data;
 
     // verificar se já existe utilizador
     const existingUser = await prisma.user.findUnique({
@@ -41,7 +42,7 @@ authRouter.post('/register', async (req, res, next) => {
 
     // criar novo utilizador
     const user = await prisma.user.create({
-      data: { email, firstName, lastName, password: hashedPassword },
+      data: { email, firstName, lastName, nickName, password: hashedPassword },
     });
 
     // criar token JWT
@@ -104,7 +105,7 @@ authRouter.get("/verify", authGuard, async (req, res) => {
     // Se chegou até aqui, o token é válido
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: { id: true, firstName: true, lastName: true, email: true }, // devolve dados básicos
+      select: { id: true, firstName: true, lastName: true, nickName: true, email: true }, // devolve dados básicos
     });
 
     if (!user) return res.status(404).json({ error: "user not found" });

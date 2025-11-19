@@ -22,6 +22,14 @@ const RegisterFields = ({ form, handleChange }) => (
       required
       size="small"
       fullWidth
+      label="Nickname"
+      value={form.nickName}
+      onChange={handleChange("nickName")}
+    />
+    <TextField
+      required
+      size="small"
+      fullWidth
       label="Email"
       type="email"
       value={form.email}

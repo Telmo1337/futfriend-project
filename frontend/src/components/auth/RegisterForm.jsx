@@ -7,6 +7,8 @@ import RegisterFields from "@/components/auth/RegisterFields";
 import useRegisterForm from "@/components/auth/hooks/useRegisterForm";
 
 const RegisterForm = () => {
+
+  //custom hook para gerir o form de registo
   const { form, handleChange, handleSubmit, error, success, isDisabled } =
     useRegisterForm();
 

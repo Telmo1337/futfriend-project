@@ -1,30 +1,31 @@
 # ==============================
-# Dockerfile - Ambiente Backend
+# Base Node
 # ==============================
-
-# Base leve e segura
 FROM node:20-alpine
 
-# Diretório de trabalho dentro do container
+# Pasta interna onde o código vive
 WORKDIR /app
 
-# Atualizar pacotes base
+# Actualizar imagem
 RUN apk update && apk upgrade
 
 # Copiar ficheiros de dependências
 COPY package*.json ./
 
-# Instalar dependências e o nodemon (para hot reload)
-RUN npm install -g nodemon && npm install
+# Instalar dependências SEM atualizar nada automaticamente
+RUN npm ci
 
-# Copiar o restante código do projeto
+# Instalar nodemon globalmente (para hot reload dentro do container)
+RUN npm install -g nodemon
+
+# Copiar restante código
 COPY . .
 
-# Gerar o Prisma Client dentro do container
+# Gerar Prisma Client
 RUN npx prisma generate
 
-# Expor a porta usada pelo servidor
+# Expor porta do backend
 EXPOSE 5500
 
-# Comando de arranque (gera Prisma se necessário e inicia servidor com hot reload)
+# Iniciar servidor com Prisma generate + hot reload
 CMD ["sh", "-c", "npx prisma generate && nodemon --legacy-watch app.js"]

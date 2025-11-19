@@ -3,18 +3,20 @@ services:
     image: mysql:8.0
     container_name: futfriend-mysql
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: futfriend
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
       - ./mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 10s
-      retries: 5
+      interval: 10s
+      timeout: 30s
+      retries: 20
     networks:
       - futfriend-net
 
@@ -24,18 +26,19 @@ services:
     restart: always
     ports:
       - "5500:5500"
-    env_file:
-      - .env
+    environment:
+      DATABASE_URL: "mysql://root:root@mysql:3306/futfriend"
+      PORT: 5500
+      JWT_SECRET: "super_secret_key"
     depends_on:
       mysql:
         condition: service_healthy
-    networks:
-      - futfriend-net
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/node_modules/.prisma
-    
+    networks:
+      - futfriend-net
+
 networks:
   futfriend-net:
     driver: bridge
