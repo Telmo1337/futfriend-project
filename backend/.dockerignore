@@ -1,14 +1,21 @@
-# Ignorar dependências locais
+# Node
 node_modules
 npm-debug.log
-
-# Ignorar volumes e ficheiros temporários
-mysql_data
 *.log
 
-# Ignorar configs e ficheiros de ambiente locais
+# Database local
+mysql_data
+
+# Environment files
 .env
 .env.*
+
+# Docker / Git
 .git
-.gitignore
+Dockerfile
+docker-compose.yml
+
+# System / IDE
 .DS_Store
+.vscode
+.idea

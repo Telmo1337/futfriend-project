@@ -1,5 +1,5 @@
 # -----------------------------
-#  LOGS E FICHEIROS TEMPORÁRIOS
+#  LOGS / TEMP FILES
 # -----------------------------
 logs
 *.log
@@ -20,21 +20,21 @@ coverage
 .grunt
 
 # -----------------------------
-#  DEPENDÊNCIAS E BUILDS
+#  DEPENDENCIES / BUILDS
 # -----------------------------
-bower_components
 node_modules/
+bower_components
 jspm_packages/
-build/Release
 typings/
 .npm
 .eslintcache
 .node_repl_history
 *.tgz
 .yarn-integrity
+build/Release
 
 # -----------------------------
-#  AMBIENTES E VARIÁVEIS
+#  ENVIRONMENT FILES
 # -----------------------------
 .env
 .env.*
@@ -42,22 +42,19 @@ typings/
 !*.example
 
 # -----------------------------
-#  NEXT / FRONTEND OUTPUT (FUTURO)
+#  FRONTEND OUTPUT (FUTURE)
 # -----------------------------
 .next
 dist/
 out/
 
 # -----------------------------
-#  PRISMA / BASE DE DADOS LOCAL
+#  DATABASE (LOCAL)
 # -----------------------------
 /prisma/dev.db
-/prisma/migrations/
-.prisma
-/generated/prisma
 
 # -----------------------------
-#  DOCKER / MYSQL (⚠️ IMPORTANTE)
+#  DOCKER / MYSQL
 # -----------------------------
 mysql_data/
 *.sock
@@ -66,7 +63,7 @@ mysql_data/
 *.err
 
 # -----------------------------
-#  SISTEMA E IDEs
+#  SYSTEM / EDITOR FILES
 # -----------------------------
 .DS_Store
 .AppleDouble

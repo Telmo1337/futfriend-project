@@ -1,30 +1,33 @@
-# ==============================
-# Dockerfile - Ambiente Backend
-# ==============================
+# =========================
+# Dockerfile FutFriend API
+# =========================
 
-# Base leve e segura
-FROM node:20-alpine
+FROM node:20-slim
 
-# Diretório de trabalho dentro do container
+# Instalar dependências necessárias (inclui mysql-client)
+RUN apt-get update -y && \
+    apt-get install -y openssl default-mysql-client && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-
-# Atualizar pacotes base
-RUN apk update && apk upgrade
 
 # Copiar ficheiros de dependências
 COPY package*.json ./
 
-# Instalar dependências e o nodemon (para hot reload)
-RUN npm install -g nodemon && npm install
+# Instalar deps
+RUN npm install
 
-# Copiar o restante código do projeto
+# Copiar resto do projeto
 COPY . .
 
-# Gerar o Prisma Client dentro do container
+# Gerar Prisma Client
 RUN npx prisma generate
 
-# Expor a porta usada pelo servidor
 EXPOSE 5500
 
-# Comando de arranque (gera Prisma se necessário e inicia servidor com hot reload)
-CMD ["sh", "-c", "npx prisma generate && nodemon --legacy-watch app.js"]
+# Espera pelo MySQL, aplica migrations e arranca o servidor
+CMD ["bash", "-c", "echo 'Waiting for MySQL...' && \
+  until mysqladmin ping -h mysql --silent; do echo 'MySQL not ready...'; sleep 2; done; \
+  echo 'MySQL ready!'; \
+  echo 'Applying Prisma migrate deploy...'; npx prisma migrate deploy; \
+  echo 'Starting server...'; npm run dev"]
