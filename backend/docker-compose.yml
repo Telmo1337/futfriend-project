@@ -4,8 +4,11 @@ services:
     container_name: futfriend-mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: futfriend
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
@@ -24,8 +27,9 @@ services:
     restart: always
     ports:
       - "5500:5500"
-    env_file:
-      - .env
+    environment:
+      DATABASE_URL: "mysql://root:root@mysql:3306/futfriend"
+      JWT_SECRET: "supersecretjwt"
     depends_on:
       mysql:
         condition: service_healthy
