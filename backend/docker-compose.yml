@@ -7,8 +7,8 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: futfriend
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: telmo
+      MYSQL_PASSWORD: 1234
     ports:
       - "3306:3306"
     volumes:
@@ -29,7 +29,7 @@ services:
     ports:
       - "5500:5500"
     environment:
-      DATABASE_URL: "mysql://root:root@mysql:3306/futfriend"
+      DATABASE_URL: "mysql://telmo:1234@mysql:3306/futfriend"
       JWT_SECRET: "supersecretjwt"
     depends_on:
       mysql:
