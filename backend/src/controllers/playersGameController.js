@@ -1,0 +1,56 @@
+// Controladores responsáveis por gerir participação e estatísticas
+// dos jogadores em cada jogo.
+import {
+  addPlayerToGame as addPlayerToGameService,
+  getGameParticipants,
+  getPlayersByGame,
+  updatePlayerStats,
+} from '../services/playersGameService.js';
+
+export async function createPlayersGameController(req, res, next) {
+  try {
+    // Adiciona um jogador (existente ou novo) a um jogo específico
+    const result = await addPlayerToGameService(req.validated.body);
+
+    if (result.error) {
+      return res.status(result.status).json({ error: result.error });
+    }
+
+    res.status(201).json(result.playerGame);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getPlayersByGameController(req, res, next) {
+  try {
+    const { gameId } = req.validated.params;
+    // Recupera todos os jogadores associados a um jogo
+    const playersGames = await getPlayersByGame(gameId);
+    res.status(200).json(playersGames);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updatePlayersGameController(req, res, next) {
+  try {
+    const { id } = req.validated.params;
+    // Atualiza estatísticas de participação (golos, cartões, etc.)
+    const updated = await updatePlayerStats(id, req.validated.body);
+    res.status(200).json(updated);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function countPlayersByGameController(req, res, next) {
+  try {
+    const { gameId } = req.validated.params;
+    // Devolve contagem agregada por equipa para controlar capacidade
+    const result = await getGameParticipants(gameId);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}

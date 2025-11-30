@@ -6,13 +6,13 @@ import cors from 'cors';
 import { PORT } from './config/env.js';
 
 //importar rotas
-import userRouter from './routes/user.routes.js';
-import gameRouter from './routes/game.routes.js';
-import playersGameRouter from './routes/playersGame.routes.js';
-import authRouter from './routes/auth.routes.js';
+import userRouter from './src/routes/userRoutes.js';
+import gameRouter from './src/routes/gameRoutes.js';
+import playersGameRouter from './src/routes/playersGameRoutes.js';
+import authRouter from './src/routes/authRoutes.js';
 
 //importar middleware global
-import {errorHandler} from './middlewares/errorHandler.js';
+import {errorHandler} from './src/middlewares/errorHandler.js';
 
 
 const app = express();
