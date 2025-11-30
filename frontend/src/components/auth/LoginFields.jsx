@@ -6,11 +6,11 @@ const LoginFields = ({ form, handleChange }) => (
       required
       size="small"
       fullWidth
-      label="Email"
-      type="email"
+      label="Email ou Nickname"
+      type="text"
       margin="normal"
-      value={form.email}
-      onChange={handleChange("email")}
+      value={form.identifier}
+      onChange={handleChange("identifier")}
       autoComplete="email"
     />
 

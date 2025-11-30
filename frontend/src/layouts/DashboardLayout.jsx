@@ -1,46 +1,30 @@
-import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
-import { SidebarTabs } from "@/components/SidebarTabs"; 
+import React from "react";
+import { Outlet } from "react-router-dom";
 
+import { AppProvider } from "@toolpad/core/AppProvider";
+import { DashboardLayout as ToolpadDashboardLayout } from "@toolpad/core/DashboardLayout";
 
-import DashboardMainContent from "@/layouts/DashboardMainContent";
+import { NAVIGATION } from "./Navigation";
+
+import FF from "@/assets/FF.png";
+
+import theme from "@/theme";
+
 
 const DashboardLayout = () => {
-  const [tab, setTab] = useState(() => {
-    return parseInt(localStorage.getItem("dashboardTab")) || 0;
-  }); 
-
-  useEffect(() => {
-    localStorage.setItem("dashboardTab", tab);
-  }, [tab]);
-
   return (
-    <Box sx={{ display: "flex", height: "100vh", bgcolor: "background.default" }}>
-      {/* Sidebar fixa */}
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          left: 0,
-          height: "100vh",
-          flexShrink: 0, // impede de encolher
-          zIndex: 10,
-        }}
-      >
-        <SidebarTabs tab={tab} setTab={setTab} />
-      </Box>
-
-      {/* Conteúdo com scroll */}
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          height: "100vh",
-        }}
-      >
-        <DashboardMainContent tab={tab} />
-      </Box>
-    </Box>
+    <AppProvider
+      navigation={NAVIGATION}
+      theme={theme}
+      branding={{ 
+        title: "FutFriend",
+        logo: false,
+      }}
+    >
+      <ToolpadDashboardLayout>
+        <Outlet />
+      </ToolpadDashboardLayout>
+    </AppProvider>
   );
 };
 

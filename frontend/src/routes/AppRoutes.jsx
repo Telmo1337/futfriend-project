@@ -16,6 +16,14 @@ import RegisterForm from "@/components/auth/RegisterForm";
 import NoFound from "@/pages/NoFound";
 
 
+import Dashboard from "@/views/Dashboard/Dashboard";
+import Games from "@/views/Games/Games";
+import Profile from "@/views/Profile/Profile";
+import Notifications from "@/views/Notifications/Notifications";
+import Help from "@/views/Help/Help";
+import Settings from "@/views/Settings/Settings";
+
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -25,13 +33,26 @@ const AppRoutes = () => {
 
       {/* Rotas públicas */}
       <Route path="/login" element={<AuthLayout><LoginForm /></AuthLayout>} />
-      <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} /> 
+      <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
 
       {/* Rota protegida: Dashboard (apenas uma) */}
+      {/* Protected Area (Toolpad) */}
       <Route
-        path="/dashboard"
-        element={<ProtectedRoutes><DashboardLayout /></ProtectedRoutes>}
-      />
+        path="/"
+        element={
+          <ProtectedRoutes>
+            <DashboardLayout />
+          </ProtectedRoutes>
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="games" element={<Games />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="help" element={<Help />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
+
 
       {/* 404 */}
       <Route path="*" element={<NoFound />} />

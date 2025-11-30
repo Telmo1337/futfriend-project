@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../../../api/axios";
-import useAuth from "../../../components/hooks/useAuth";
+import useAuth from "../../../components/auth/hooks/useAuth";
 
 /**
  * Hook para obter estatísticas do utilizador autenticado

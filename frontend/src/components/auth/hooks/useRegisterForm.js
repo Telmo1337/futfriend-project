@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "./useAuth";
 import API from "../../../api/axios";
 
 export default function useRegisterForm() {
@@ -11,13 +11,14 @@ export default function useRegisterForm() {
     firstName: "",
     lastName: "",
     email: "",
+    nickName: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const isDisabled =
-    !form.firstName || !form.lastName || !form.email || !form.password;
+    !form.firstName || !form.lastName || !form.email || !form.nickName || !form.password;
 
   const handleChange = (field) => (e) => {
     setError("");
@@ -31,9 +32,13 @@ export default function useRegisterForm() {
       setSuccess("Conta criada! A iniciar sessão...");
       setError("");
 
-      await login({ email: form.email, password: form.password });
+      await login({ identifier: form.email, password: form.password });
+
       setTimeout(() => navigate("/login"), 1000);
+   
     } catch (err) {
+
+
       console.error(err);
       setError(err.response?.data?.error || "Erro ao criar conta.");
       setSuccess("");
