@@ -30,12 +30,12 @@ export const updateGameSchema = z.object({
   }),
 });
 
-export const addPlayerToGameSchema = z.object({
-  body: z.object({
-    // Utilizado quando um utilizador se inscreve num jogo
-    email: z.string().email('Email inválido'),
-    name: z.string().optional(),
-    team: z.enum(['teamA', 'teamB']).optional(),
+
+export const joinGameSchema = z.object({
+  params: z.object({
+    id: z.string(),
   }),
-  params: z.object({ id: z.string() }),
+  body: z.object({
+    team: z.enum(['teamA', 'teamB']),
+  }),
 });

@@ -7,7 +7,10 @@ import {
   getPlayersByGameController,
   updatePlayersGameController,
 } from '../controllers/playersGameController.js';
+
 import { validateRequest } from '../middlewares/validateRequest.js';
+import { authGuard } from '../utils/auth.js';
+
 import {
   createPlayersGameSchema,
   playersByGameSchema,
@@ -18,10 +21,9 @@ import {
 
 const playersGameRouter = Router();
 
-playersGameRouter.post('/', validateRequest(createPlayersGameSchema), createPlayersGameController);
-playersGameRouter.get('/game/:gameId/players', validateRequest(playersByGameSchema),getPlayersByGameController);
-playersGameRouter.put('/:id', validateRequest(updatePlayersGameSchema), updatePlayersGameController);
-playersGameRouter.get('/game/:gameId', validateRequest(playersByGameSchema), countPlayersByGameController);
-
+playersGameRouter.post('/', authGuard, validateRequest(createPlayersGameSchema), createPlayersGameController);
+playersGameRouter.get('/game/:gameId/players', authGuard, validateRequest(playersByGameSchema),getPlayersByGameController);
+playersGameRouter.put('/:id', authGuard, validateRequest(updatePlayersGameSchema), updatePlayersGameController);
+playersGameRouter.get('/game/:gameId', authGuard, validateRequest(playersByGameSchema), countPlayersByGameController);
 
 export default playersGameRouter;

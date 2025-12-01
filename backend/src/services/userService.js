@@ -36,9 +36,40 @@ export async function searchUsers(query) {
   });
 }
 
-export async function getAllUsers() {
-  // Usado para listagens administrativas
-  return prisma.user.findMany();
+export async function getAllUsers(page = 1, limit = 10) {
+  const skip = (page - 1) * limit;
+
+  // total de utilizadores
+  const total = await prisma.user.count();
+
+  // obter utilizadores paginados
+  const users = await prisma.user.findMany({
+    skip,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      email: true,
+      nickname: true,
+      firstName: true,
+      lastName: true,
+      goals: true,
+      victories: true,
+      losses: true,
+      draws: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+  });
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    users
+  };
 }
 
 export async function getUserById(id) {

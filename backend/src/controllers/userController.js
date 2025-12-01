@@ -47,13 +47,17 @@ export async function searchUsersController(req, res, next) {
 
 export async function getUsersController(req, res, next) {
   try {
-    // Listagem simples de utilizadores para interfaces administrativas
-    const users = await getAllUsers();
-    res.status(200).json(users);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const result = await getAllUsers(page, limit);
+
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }
 }
+
 
 export async function getUserByIdController(req, res, next) {
   try {

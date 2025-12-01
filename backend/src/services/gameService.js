@@ -15,31 +15,50 @@ export async function createGame(data, userId) {
   return prisma.game.create({
     data: {
       ...data,
-      date: new Date(data.date),
-      maxPlayersPerTeam,
       createdById: userId,
+      maxPlayersPerTeam,
     },
     include: {
-      createdBy: true,
-    },
+      createdBy: {
+        select: {
+          nickname: true,
+          createdAt: true,
+          updatedAt: true,
+        }
+      }
+    }
   });
+
 }
 
-export async function getAllGames() {
-  // Lista todos os jogos com dados mínimos do criador para exibição
-  return prisma.game.findMany({
+export async function getAllGames(page = 1, limit = 10) {
+  const skip = (page - 1) * limit;
+
+  const total = await prisma.game.count();
+
+  const games = await prisma.game.findMany({
+    skip,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
     include: {
       createdBy: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
+          nickname: true,
         },
       },
     },
   });
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    games,
+  };
 }
+
 
 export async function getGameById(id) {
   // Busca jogo e inclui jogadores inscritos para detalhar equipas
@@ -118,41 +137,44 @@ export async function deleteGame(id, userId) {
   return { success: true };
 }
 
-export async function addPlayerToGame(gameId, payload) {
-  // Garante que o jogo existe antes de manipular inscrições
-  const game = await prisma.game.findUnique({ where: { id: gameId } });
-  if (!game) return { error: 'Jogo não encontrado.', status: 404 };
-
-  // Procura utilizador pelo email; caso não exista, cria um temporário
-  let user = await prisma.user.findUnique({ where: { email: payload.email } });
-
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        email: payload.email,
-        firstName: payload.name || payload.email.split('@')[0],
-        lastName: '',
-        password: 'temporary',
-      },
-    });
-  }
-
-  const existing = await prisma.playersGame.findFirst({
-    where: { userId: user.id, gameId },
+export async function joinGame(gameId, userId, team) {
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
   });
-  if (existing) {
-    return { error: 'Jogador já está inscrito neste jogo.', status: 400 };
+
+  if (!game) {
+    return { error: 'Jogo não encontrado.', status: 404 };
   }
 
-  // Cria ligação jogador-jogo e devolve dados mínimos do utilizador
+  // Verificar se já está inscrito
+  const existing = await prisma.playersGame.findFirst({
+    where: { userId, gameId },
+  });
+
+  if (existing) {
+    return { error: 'Já estás inscrito neste jogo.', status: 400 };
+  }
+
+  // Verificar limite da equipa
+  const countTeam = await prisma.playersGame.count({
+    where: { gameId, team },
+  });
+
+  if (countTeam >= game.maxPlayersPerTeam) {
+    return { error: `A equipa ${team} está cheia.`, status: 400 };
+  }
+
+  // Criar ligação jogador-jogo
   const playerGame = await prisma.playersGame.create({
     data: {
-      userId: user.id,
+      userId,
       gameId,
-      team: payload.team === 'teamB' ? 'teamB' : 'teamA',
+      team,
     },
     include: {
-      user: { select: { id: true, firstName: true, lastName: true, email: true } },
+      user: {
+        select: { id: true, nickname: true, firstName: true, lastName: true },
+      },
     },
   });
 

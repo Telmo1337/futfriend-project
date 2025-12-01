@@ -1,42 +1,46 @@
 /* eslint-disable no-unused-vars */
-// Serviço de autenticação: valida credenciais, cria utilizadores e tokens JWT.
 import { prisma } from '../../db/prisma.js';
 import { checkPassword, generateToken, hashPassword } from '../utils/auth.js';
 
 export async function registerUser(data) {
-  // Verifica duplicados pelo email antes de criar o utilizador
-  const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+  const existingUser = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
+
   if (existingUser) {
     return { error: 'Email já está registado.', status: 400 };
   }
 
-  // Hash da password para armazenamento seguro
+  // Hash
   const hashedPassword = await hashPassword(data.password);
 
+  // Verificar se este é o primeiro utilizador
+  const countUsers = await prisma.user.count();
+
   const user = await prisma.user.create({
-    data: { ...data, password: hashedPassword },
+    data: {
+      email: data.email,
+      nickname: data.nickname,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      password: hashedPassword,
+      role: countUsers === 0 ? 'ADMIN' : 'USER', // ✔ PRIMEIRO = ADMIN
+    },
   });
 
   const token = generateToken(user);
-  
+
+  // Remover password da resposta
   const { password, ...userWithoutPassword } = user;
 
   return { user: userWithoutPassword, token };
 }
 
 export async function loginUser({ identifier, password }) {
-  // Procura por email ou nickname para permitir ambas as formas de login
+  // Buscar password também
   const user = await prisma.user.findFirst({
     where: {
       OR: [{ email: identifier }, { nickname: identifier }],
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      nickname: true,
-      password: true,
     },
   });
 
@@ -44,24 +48,31 @@ export async function loginUser({ identifier, password }) {
     return { error: 'Email ou password incorreta.', status: 404 };
   }
 
-  // Compara o hash guardado com a password fornecida
+  // Verificar password
   const valid = await checkPassword(password, user.password);
   if (!valid) {
     return { error: 'Email ou password incorreta.', status: 401 };
   }
 
-  // Gera token JWT com dados mínimos do utilizador
   const token = generateToken(user);
+
+  // Remover password
   const { password: _, ...userWithoutPassword } = user;
 
   return { user: userWithoutPassword, token };
 }
 
 export async function verifyUser(userId) {
-  // Verifica se o utilizador ainda existe na base de dados
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, firstName: true, lastName: true, email: true, nickname: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      nickname: true,
+      role: true,
+    },
   });
 
   if (!user) {

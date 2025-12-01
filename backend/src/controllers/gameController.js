@@ -1,7 +1,7 @@
 // Controladores de jogos: recebem requests e delegam nos serviços
 // para aplicar regras de negócio e persistência.
 import {
-  addPlayerToGame,
+  joinGame,
   createGame,
   deleteGame,
   getAllGames,
@@ -21,13 +21,17 @@ export async function createGameController(req, res, next) {
 
 export async function getGamesController(req, res, next) {
   try {
-    // Lista completa, sem filtros, utilizada pela app para preencher feeds
-    const games = await getAllGames();
-    res.status(200).json(games);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const result = await getAllGames(page, limit);
+
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }
 }
+
 
 export async function getGameByIdController(req, res, next) {
   try {
@@ -80,20 +84,23 @@ export async function deleteGameController(req, res, next) {
   }
 }
 
-export async function addPlayerToGameController(req, res, next) {
+export async function joinGameController(req, res, next) {
   try {
-    const { id } = req.validated.params;
-    // Permite adicionar utilizadores existentes ou criar um temporário
-    const result = await addPlayerToGame(id, req.validated.body);
+    const { id } = req.params;
+    const { team } = req.validated.body;
+
+    // req.user.id vem do token
+    const result = await joinGame(id, req.user.id, team);
 
     if (result.error) {
       return res.status(result.status).json({ error: result.error });
     }
 
     res.status(201).json({
-      message: 'Jogador adicionado com sucesso.',
+      message: 'Entraste no jogo com sucesso.',
       player: result.playerGame,
     });
+
   } catch (err) {
     next(err);
   }
