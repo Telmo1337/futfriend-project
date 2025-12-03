@@ -29,9 +29,16 @@ export async function searchUsers(query) {
         { email: { contains: query } },
         { firstName: { contains: query } },
         { lastName: { contains: query } },
-      ],
+        { nickname: { contains: query } }   // FALTAVA ISTO
+      ]
     },
-    select: { id: true, firstName: true, lastName: true, email: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      nickname: true,
+      email: true,
+    },
     take: 5,
   });
 }

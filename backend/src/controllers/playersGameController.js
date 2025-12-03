@@ -1,26 +1,12 @@
 // Controladores responsáveis por gerir participação e estatísticas
 // dos jogadores em cada jogo.
 import {
-  addPlayerToGame as addPlayerToGameService,
   getGameParticipants,
   getPlayersByGame,
   updatePlayerStats,
 } from '../services/playersGameService.js';
 
-export async function createPlayersGameController(req, res, next) {
-  try {
-    // Adiciona um jogador (existente ou novo) a um jogo específico
-    const result = await addPlayerToGameService(req.validated.body);
 
-    if (result.error) {
-      return res.status(result.status).json({ error: result.error });
-    }
-
-    res.status(201).json(result.playerGame);
-  } catch (err) {
-    next(err);
-  }
-}
 
 export async function getPlayersByGameController(req, res, next) {
   try {

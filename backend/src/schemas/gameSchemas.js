@@ -16,20 +16,16 @@ export const createGameSchema = z.object({
 
 export const updateGameSchema = z.object({
   body: z.object({
-    // Atualização parcial dos campos do jogo
     teamA: z.string().optional(),
     teamB: z.string().optional(),
     date: z.string().optional(),
     location: z.string().optional(),
-    state: z.string().optional(),
-    goalsA: z.number().int().optional(),
-    goalsB: z.number().int().optional(),
+    type: gameTypeEnum.optional(),
   }),
   params: z.object({
     id: z.string(),
   }),
 });
-
 
 export const joinGameSchema = z.object({
   params: z.object({
@@ -37,5 +33,16 @@ export const joinGameSchema = z.object({
   }),
   body: z.object({
     team: z.enum(['teamA', 'teamB']),
+  }),
+});
+
+
+export const finishGameSchema = z.object({
+  body: z.object({
+    goalsA: z.number().int(),
+    goalsB: z.number().int(),
+  }),
+  params: z.object({
+    id: z.string(),
   }),
 });

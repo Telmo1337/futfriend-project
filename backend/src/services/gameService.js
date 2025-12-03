@@ -1,54 +1,37 @@
-// Serviço responsável por gerir regras de negócio e persistência de jogos.
-import { prisma } from '../../db/prisma.js';
+import { prisma } from "../../db/prisma.js";
 
-// Número máximo de jogadores por equipa para cada tipo de jogo.
-const MAX_PLAYERS_PER_TYPE = {
-  FIVE_A_SIDE: 5,
-  SEVEN_A_SIDE: 7,
-  ELEVEN_A_SIDE: 11,
-};
-
+/* ============================================================
+   1. Criar jogo
+============================================================ */
 export async function createGame(data, userId) {
-  // Calcula tamanho de equipa consoante o tipo e cria o registo
-  const maxPlayersPerTeam = MAX_PLAYERS_PER_TYPE[data.type];
-
   return prisma.game.create({
     data: {
       ...data,
       createdById: userId,
-      maxPlayersPerTeam,
     },
-    include: {
-      createdBy: {
-        select: {
-          nickname: true,
-          createdAt: true,
-          updatedAt: true,
-        }
-      }
-    }
   });
-
 }
 
-export async function getAllGames(page = 1, limit = 10) {
+/* ============================================================
+   2. Listar jogos (com paginação)
+============================================================ */
+export async function getAllGames(page, limit) {
   const skip = (page - 1) * limit;
 
-  const total = await prisma.game.count();
-
-  const games = await prisma.game.findMany({
-    skip,
-    take: limit,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      createdBy: {
-        select: {
-          id: true,
-          nickname: true,
+  const [games, total] = await Promise.all([
+    prisma.game.findMany({
+      skip,
+      take: limit,
+      include: {
+        createdBy: {
+          select: { id: true, nickname: true },
         },
       },
-    },
-  });
+      orderBy: { createdAt: "desc" },
+    }),
+
+    prisma.game.count(),
+  ]);
 
   return {
     page,
@@ -59,112 +42,172 @@ export async function getAllGames(page = 1, limit = 10) {
   };
 }
 
-
+/* ============================================================
+   3. Obter jogo por ID
+============================================================ */
 export async function getGameById(id) {
-  // Busca jogo e inclui jogadores inscritos para detalhar equipas
   return prisma.game.findUnique({
     where: { id },
     include: {
-      createdBy: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-        },
-      },
+      createdBy: { select: { id: true, nickname: true } },
       playersGame: {
         include: {
-          user: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
-            },
-          },
+          user: { select: { id: true, nickname: true, firstName: true, lastName: true } },
         },
       },
     },
   });
 }
 
-export async function updateGame(id, data, userId) {
-  // Verifica existência do jogo
-  const game = await prisma.game.findUnique({ where: { id } });
-  if (!game) return { error: 'Jogo não encontrado.', status: 404 };
+/* ============================================================
+   4. Atualizar dados gerais de um jogo
+      (data, local, equipas, tipo, etc.)
+============================================================ */
+export async function updateGame(gameId, data, user) {
+  const game = await prisma.game.findUnique({ where: { id: gameId } });
 
-  // Apenas o criador do jogo pode atualizar
-  if (game.createdById !== userId) {
-    return { error: 'Não está autorizado a editar este jogo.', status: 403 };
+  if (!game) {
+    return { error: "Jogo não encontrado.", status: 404 };
   }
 
-  // Prepara objeto de updates apenas com campos enviados
-  const updates = {};
-  if (data.teamA !== undefined) updates.teamA = data.teamA;
-  if (data.teamB !== undefined) updates.teamB = data.teamB;
-  if (data.location !== undefined) updates.location = data.location;
-  if (data.state !== undefined) updates.state = data.state;
-  if (data.goalsA !== undefined) updates.goalsA = Number(data.goalsA);
-  if (data.goalsB !== undefined) updates.goalsB = Number(data.goalsB);
-
-  if (data.date !== undefined) {
-    const parsedDate = new Date(data.date);
-    if (isNaN(parsedDate.getTime())) {
-      return { error: 'Data inválida.', status: 400 };
-    }
-    updates.date = parsedDate;
+  // Permissões: criador OU admin
+  if (user.id !== game.createdById && user.role !== "ADMIN") {
+    return { error: "Não tens permissão para atualizar este jogo.", status: 403 };
   }
 
-  const updatedGame = await prisma.game.update({
-    where: { id },
-    data: updates,
+  const updated = await prisma.game.update({
+    where: { id: gameId },
+    data,
   });
 
-  return { game: updatedGame };
+  return { game: updated };
 }
 
-export async function deleteGame(id, userId) {
-  // Apenas o criador pode remover o jogo
-  const game = await prisma.game.findUnique({ where: { id } });
-  if (!game) return { error: 'Jogo não encontrado.', status: 404 };
-
-  if (game.createdById !== userId) {
-    return { error: 'Não está autorizado a apagar este jogo.', status: 403 };
-  }
-
-  await prisma.game.delete({ where: { id } });
-  return { success: true };
-}
-
-export async function joinGame(gameId, userId, team) {
+/* ============================================================
+   5. Finalizar jogo + atualizar estatísticas dos jogadores
+============================================================ */
+export async function finishGame(gameId, user) {
   const game = await prisma.game.findUnique({
     where: { id: gameId },
+    include: { playersGame: true },
   });
 
   if (!game) {
-    return { error: 'Jogo não encontrado.', status: 404 };
+    return { error: "Jogo não encontrado.", status: 404 };
   }
 
-  // Verificar se já está inscrito
-  const existing = await prisma.playersGame.findFirst({
-    where: { userId, gameId },
-  });
-
-  if (existing) {
-    return { error: 'Já estás inscrito neste jogo.', status: 400 };
+  // Apenas criador ou admin pode finalizar
+  if (user.id !== game.createdById && user.role !== "ADMIN") {
+    return { error: "Não tens permissão para finalizar este jogo.", status: 403 };
   }
 
-  // Verificar limite da equipa
-  const countTeam = await prisma.playersGame.count({
-    where: { gameId, team },
+  if (game.state === "finished") {
+    return { error: "O jogo já foi finalizado anteriormente.", status: 400 };
+  }
+
+  const { goalsA, goalsB } = game;
+
+  // Determinar vencedor
+  let winner = null;
+  if (goalsA > goalsB) winner = "teamA";
+  if (goalsB > goalsA) winner = "teamB";
+  // se empate → winner = null
+
+  // Atualizar estatísticas jogador a jogador
+  for (const pg of game.playersGame) {
+    const userStats = {};
+
+    // Adicionar golos individuais
+    userStats.goals = pg.goals;
+
+    // Vitória / empate / derrota
+    if (winner === null) {
+      // Empate
+      userStats.draws = 1;
+    } else if (pg.team === winner) {
+      userStats.victories = 1;
+    } else {
+      userStats.losses = 1;
+    }
+
+    // Atualizar estatísticas acumuladas
+    await prisma.user.update({
+      where: { id: pg.userId },
+      data: {
+        goals: { increment: pg.goals },
+        victories: { increment: userStats.victories ?? 0 },
+        losses: { increment: userStats.losses ?? 0 },
+        draws: { increment: userStats.draws ?? 0 },
+      },
+    });
+  }
+
+  // Marcar jogo como finalizado
+  const finishedGame = await prisma.game.update({
+    where: { id: gameId },
+    data: { state: "finished" },
   });
+
+  return { game: finishedGame };
+}
+
+/* ============================================================
+   6. Apagar jogo
+============================================================ */
+export async function deleteGame(gameId, userId) {
+  const game = await prisma.game.findUnique({ where: { id: gameId } });
+
+  if (!game) {
+    return { error: "Jogo não encontrado.", status: 404 };
+  }
+
+  // Apenas criador OU admin apaga
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (game.createdById !== userId && user.role !== "ADMIN") {
+    return { error: "Não tens permissão para apagar este jogo.", status: 403 };
+  }
+
+  await prisma.playersGame.deleteMany({ where: { gameId } });
+  await prisma.game.delete({ where: { id: gameId } });
+
+  return { success: true };
+}
+
+/* ============================================================
+   7. Entrar num jogo
+============================================================ */
+export async function joinGame(gameId, userId, team) {
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
+    include: { playersGame: true },
+  });
+
+  if (!game) return { error: "Jogo não encontrado.", status: 404 };
+
+  if (game.state !== "scheduled") {
+    return { error: "O jogo já começou ou terminou.", status: 400 };
+  }
+
+  // Ver se o user já está no jogo
+  const exists = await prisma.playersGame.findUnique({
+    where: { userId_gameId: { userId, gameId } },
+  });
+
+  if (exists) {
+    return { error: "Já estás inscrito neste jogo.", status: 400 };
+  }
+
+  // Contar jogadores por equipa
+  const countTeam = game.playersGame.filter(p => p.team === team).length;
 
   if (countTeam >= game.maxPlayersPerTeam) {
-    return { error: `A equipa ${team} está cheia.`, status: 400 };
+    return {
+      error: `A equipa ${team} já está cheia.`,
+      status: 400,
+    };
   }
 
-  // Criar ligação jogador-jogo
   const playerGame = await prisma.playersGame.create({
     data: {
       userId,

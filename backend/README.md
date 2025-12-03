@@ -4,12 +4,28 @@
 
 ## Descrição
 
-O **Futfriend** é uma web app que permite aos utilizadores:
-- Criar e gerir os jogos de futebol
-- Participar em jogos com outros utilizadores(jogadores)
-- Controlar golos, vitórias, empates e derrotas
-- Gestão de autenticação com **JWT (JSON Web Token)**  
-- Realizar todas as operações via **API RESTful** construída com Express + Prisma
+**Futfriend** é a API que suporta a aplicação de gestão de jogos de futebol entre amigos.
+Permite criar partidas, gerir lobbies, inscrever jogadores, registar estatísticas individuais e controlar toda a lógica dos jogos de forma estruturada.
+
+O sistema segue o modelo RESTful, com autenticação via JWT, validação rigorosa dos dados e uma arquitetura organizada em camadas.
+
+---
+
+## Funcionalidades Principais
+
+- Registo e autenticação de utilizadores
+
+- Criação e gestão de jogos (lobbies)
+
+- Entrada e participação em jogos por utilizadores autenticados
+
+- Controlo de equipas, golos, vitórias, empates e derrotas
+
+- Consulta de estatísticas pessoais e de jogo
+
+- Rotas protegidas com JWT
+
+- Interação com base de dados MySQL através de Prisma ORM
 
 ---
 
@@ -19,243 +35,113 @@ O **Futfriend** é uma web app que permite aos utilizadores:
 |-------------|------------|
 | **Node.js + Express** | Framework backend |
 | **Prisma ORM** | Mapeamento objeto-relacional (MySQL) |
-| **MySQL / MariaDB** | Base de dados relacional |
+| **MySQL** | Base de dados relacional |
 | **JWT** | Autenticação segura por token |
 | **bcryptjs** | Hash seguro de passwords |
 | **Zod** | Validação de dados de entrada |
-| **dotenv** | Gestão de variáveis de ambiente |
+| **Docker** | Ambientes isolados para backend + MySQL |
+| **Postman** | Testes e documentação dos endpoints |
 
 ---
 
 ## Instalação e Execução
 
+A API do Futfriend está totalmente containerizada.
+Isto significa que não é necessário instalar Node.js, MySQL ou Prisma na máquina.
+
+Basta ter Docker instalado.
+
+### 1. Pré-requisitos
+
+Antes de iniciar o projeto, garante que tens:
+
+Docker Desktop (Windows/macOS)
+ou
+
+Docker Engine + Docker Compose Plugin (Linux)
+
+Para verificar se o Docker está ativo:
+
 ```bash
-# 1 - Instalar dependências
-npm install
-
-# 2️ - Criar ficheiro de ambiente
-touch .env.development.local
-
+docker --version
+docker compose version
 ```
 
-```javascript
-PORT=5500
-NODE_ENV=development
-DATABASE_URL="mysql://root@localhost:3306/futfriend"
-JWT_SECRET=chave_super_segura
-```
+### 2. Clonar o repositório
 
 ```bash
-# 3️- Criar estrutura da base de dados
-npx prisma migrate dev --name init
-
-# 4️- Iniciar o server
-npm run dev
+git clone https://github.com/Telmo1337/futfriend-project
+cd futfriend-backend
 ```
 
-###### Servidor ativo em: http://localhost:5500
+### 3. Iniciar todo o ambiente
+
+A partir do repositório, basta correr:
+```bash
+npm run projectFutFriend
+```
+
+Este comando faz automaticamente:
+
+1.docker compose down -v
+Limpa containers e volumes antigos (evita erros).
+
+2. docker compose up -d --build
+
+  - Cria o container MySQL
+
+  - Cria o container do backend
+
+  - Espera que a BD fique pronta
+
+  - Aplica prisma migrate deploy
+
+  - Inicia o servidor Express
+
+Tudo isto sem qualquer intervenção manual.
+
+
+### 4. Confirmar se o servidor arrancou corretamente
+
+```bash
+docker ps
+```
+Algo como:
+```bash
+futfriend-backend   Up ...
+futfriend-mysql     Up (healthy)
+```
+Para ver os logs do backend:
+```bash
+docker logs -f futfriend-backend
+```
+
+### 5. Aceder ao backend
+
+O servidor fica disponível em:
+```bash
+http://localhost:5500
+```
+
+### 6. Parar o ambiente
+
+```bash
+npm run projectFutFriend-stop
+```
+
+Este comando remove:
+
+- Containers
+
+- Rede
+
+- Volumes (BD)
+
+(Isto garante que cada arranque é 100% limpo.)
 
 ---
-
-## Autenticação
-
-A autenticação é baseada em JWT.
-Todas as rotas protegidas exigem o header:
-```css
-Authorization: Bearer {{token}}
-```
-
----
-
-## Endpoints Principais
-
-###### Auth
-
-- Registo do utilizador:
-**POST /api/v1/auth/register**
-
-```json
-{
-  "email": "telmo@ipvc.pt",
-  "name": "Telmo Alexandre",
-  "password": "telmo123456"
-}
-```
-
-
-*Resposta:*
-```json
-{
-  "user": {
-    "id": "uuid",
-    "email": "telmo@ipvc.pt",
-    "name": "Telmo Alexandre"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-}
-
-```
-
-- Login:
-**POST /api/v1/auth/login**
-```json
-{
-  "email": "telmo@ipvc.pt",
-  "password": "telmo123456"
-}
-```
-*Resposta:*
-```json
-{
-  "user": {
-    "id": "uuid",
-    "email": "telmo@ipvc.pt",
-    "name": "Telmo Alexandre"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-}
-```
-
-###### Users
-
-| Método     | Endpoint            | Descrição                         |
-| ---------- | ------------------- | --------------------------------- |
-| **GET**    | `/api/v1/users`     | Lista de todos os utilizadores      |
-| **GET**    | `/api/v1/users/:id` | Obter um utilizador pelo ID       |
-| **PUT**    | `/api/v1/users/:id` | Atualizar dados de um utilizador  |
-| **DELETE** | `/api/v1/users/:id` | Apagar utilizador e os seus jogos |
-
-
-###### Games
-
-- Criar um jogo novo:
-**POST /api/v1/games** *(requer token JWT)*
-```json
-{
-  "teamA": "Equipa A",
-  "teamB": "Equipa B",
-  "date": "2025-10-27T15:00:00Z",
-  "location": "Campo IPVC-ESTG"
-}
-
-```
-*Resposta:*
-```json
-{
-  "id": "uuid",
-  "teamA": "Equipa A",
-  "teamB": "Equipa B",
-  "state": "scheduled",
-  "date": "2025-10-27T15:00:00Z",
-  "location": "Campo IPVC-ESTG",
-  "createdById": "uuid"
-}
-```
-
-| Método     | Endpoint            | Descrição                               |
-| ---------- | ------------------- | --------------------------------------- |
-| **GET**    | `/api/v1/games`     | Lista de todos os jogos                   |
-| **GET**    | `/api/v1/games/:id` | Obter jogo pelo ID                      |
-| **PUT**    | `/api/v1/games/:id` | Atualizar estado ou resultado do jogo   |
-| **DELETE** | `/api/v1/games/:id` | Apagar jogo (apenas criador autorizado) |
-
-
-
-###### Players / Participações
-| Método   | Endpoint                       | Descrição                                 |
-| -------- | ------------------------------ | ----------------------------------------- |
-| **POST** | `/api/v1/players`              | Adicionar jogador a um jogo               |
-| **GET**  | `/api/v1/players/game/:gameId` | Lista de todos os jogadores de um jogo      |
-| **PUT**  | `/api/v1/players/:id`          | Atualizar estatísticas (golos, resultado) |
-
-
-*Exemplo de associação:*
-```json
-{
-  "userId": "uuid_do_user",
-  "gameId": "uuid_do_jogo",
-  "team": "A"
-}
-
-```
-
----
-
-## Modelos da Base de Dados (Prisma)
-
-```prisma
-model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  name        String?
-  password    String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  goals       Int          @default(0)
-  victories   Int          @default(0)
-  losses      Int          @default(0)
-  draws       Int          @default(0)
-  playersGame PlayersGame[]
-  Game        Game[]
-}
-
-model Game {
-  id          String        @id @default(uuid())
-  teamA       String
-  teamB       String
-  goalsA      Int           @default(0)
-  goalsB      Int           @default(0)
-  state       String        @default("scheduled")
-  date        DateTime
-  location    String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  createdById String
-  createdBy   User          @relation(fields: [createdById], references: [id])
-  playersGame PlayersGame[]
-}
-
-model PlayersGame {
-  id        String    @id @default(uuid())
-  userId    String
-  gameId    String
-  team      String
-  score     String?
-  goals     Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-  game Game @relation(fields: [gameId], references: [id])
-
-  @@unique([userId, gameId])
-}
-
-```
-
 
 ## Licença e Créditos
 
 Projeto académico desenvolvido por **Telmo Regalado**, aluno de CTESP - Desenvolvimento Web e Multimédia - IPVC-ESTG
 
-## Notas
-
-`* Todas as rotas foram testadas via Postman.`
-
-`* Pode ser facilmente expandido com mais estatísticas, chat entre jogadores ou até mesmo ranking de performance.`* 
-
-## Melhorias:
-
-`* Adicionar rate limit ou proteção contra brute-force no login (por ex. express-rate-limit), sito significa por exemplo: permitir no máximo 5 tentativas de login por 15 minutos.`* 
-
-`* Adicionar validação extra para password (requisitos mínimos de segurança). Ou seja, atualmente o sistema pede "min(6)". Isto significa que é fraco em termos de validações... — 123456 ou abcdef passam facilmente.`* 
-
-A solução:
-(Adicionar requisitos específicos como: pelo menos 8 caracteres)
-- 1 letra maiúscula
-- 1 letra minúscula
-- 1 número
-- 1 símbolo especial
-
-
-`* Adicionar melhorias no gameRouter

@@ -1,14 +1,6 @@
 // Schemas para validar inscrições e atualizações de jogadores nos jogos.
 import { z } from 'zod';
 
-export const createPlayersGameSchema = z.object({
-  body: z.object({
-    // Dados mínimos para inscrever um jogador
-    userId: z.string(),
-    gameId: z.string(),
-    team: z.enum(['teamA', 'teamB']),
-  }),
-});
 
 export const updatePlayersGameSchema = z.object({
   params: z.object({ id: z.string() }),
