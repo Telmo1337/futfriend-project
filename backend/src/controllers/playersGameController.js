@@ -22,13 +22,19 @@ export async function getPlayersByGameController(req, res, next) {
 export async function updatePlayersGameController(req, res, next) {
   try {
     const { id } = req.validated.params;
-    // Atualiza estatísticas de participação (golos, cartões, etc.)
-    const updated = await updatePlayerStats(id, req.validated.body);
+
+    const updated = await updatePlayerStats(
+      id,
+      req.validated.body,
+      req.user 
+    );
+
     res.status(200).json(updated);
   } catch (err) {
     next(err);
   }
 }
+
 
 export async function countPlayersByGameController(req, res, next) {
   try {

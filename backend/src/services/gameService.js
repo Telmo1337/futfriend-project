@@ -52,7 +52,7 @@ export async function getGameById(id) {
       createdBy: { select: { id: true, nickname: true } },
       playersGame: {
         include: {
-          user: { select: { nickname: true} },
+          user: { select: { nickname: true } },
         },
       },
     },
@@ -75,15 +75,19 @@ export async function updateGame(gameId, data, user) {
     return { error: "Não tens permissão para atualizar este jogo.", status: 403 };
   }
 
-  // Se o jogo estiver finalizado, NÃO permitir alterações
+  // Não permitir alterar jogo finalizado
   if (game.state === "finished") {
-    return { 
-      error: "Não é possível alterar um jogo que já foi finalizado.", 
-      status: 400 
+    return {
+      error: "Não é possível alterar um jogo que já foi finalizado.",
+      status: 400
     };
   }
 
-  // Atualização permitida
+  // Não permitir alterar estado manualmente
+  delete data.state;
+  delete data.goalsA;
+  delete data.goalsB;
+
   const updated = await prisma.game.update({
     where: { id: gameId },
     data,

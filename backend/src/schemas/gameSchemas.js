@@ -25,8 +25,6 @@ export const updateGameSchema = z.object({
     type: gameTypeEnum.optional(),
     maxPlayersPerTeam: z.number().int().optional(),
     state: z.enum(["scheduled", "ongoing", "finished"]).optional(),
-    goalsA: z.number().int().min(0).optional(),
-    goalsB: z.number().int().min(0).optional(),
   }),
 });
 

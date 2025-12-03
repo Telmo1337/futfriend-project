@@ -60,13 +60,12 @@ export async function getGameByIdController(req, res, next) {
 
 /* -----------------------------
    Atualizar dados gerais do jogo
-   (data, local, nome das equipas, tipo, etc.)
 ------------------------------ */
 export async function updateGameController(req, res, next) {
   try {
-    const { id } = req.validated.params;   // enviado pela rota
-    const data = req.validated.body;       // campos do update
-    const user = req.user;                 // vem do token
+    const { id } = req.validated.params;
+    const data = req.validated.body;
+    const user = req.user;
 
     const result = await updateGame(id, data, user);
 
@@ -85,7 +84,7 @@ export async function updateGameController(req, res, next) {
 }
 
 /* -----------------------------
-   Fechar jogo e atualizar estatísticas
+   Finalizar jogo e aplicar estatísticas
 ------------------------------ */
 export async function finishGameController(req, res, next) {
   try {
