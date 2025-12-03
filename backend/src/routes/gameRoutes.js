@@ -1,4 +1,4 @@
-// Rotas de jogos: criação, consulta, atualização e inscrição de jogadores.
+// Rotas de jogos
 import { Router } from 'express';
 import {
   joinGameController,
@@ -9,40 +9,38 @@ import {
   updateGameController,
   finishGameController,
 } from '../controllers/gameController.js';
+
 import { validateRequest } from '../middlewares/validateRequest.js';
 import { authGuard } from '../utils/auth.js';
-import {  createGameSchema, updateGameSchema, joinGameSchema, finishGameSchema } from '../schemas/gameSchemas.js';
 
-
+import {
+  createGameSchema,
+  updateGameSchema,
+  joinGameSchema,
+  finishGameSchema
+} from '../schemas/gameSchemas.js';
 
 const gameRouter = Router();
 
-// Definição das rotas de jogos
-// Rota para criar um novo jogo 
+// Criar jogo
 gameRouter.post('/', authGuard, validateRequest(createGameSchema), createGameController);
 
-// Rota para obter a lista de jogos
+// Listar jogos
 gameRouter.get('/', authGuard, getGamesController);
 
-// Rota para obter detalhes de um jogo específico
+// Ver jogo
 gameRouter.get('/:id', authGuard, getGameByIdController);
 
-
-//alteraçoes do lobby do jogo
-//  Atualizar dados gerais do jogo (local, data, nome das equipas, etc.
+// Atualizar dados gerais + resultado
 gameRouter.put('/:id', authGuard, validateRequest(updateGameSchema), updateGameController);
-// Fechar o jogo (aplicar resultados + atualizar estatísticas)
+
+// Finalizar (aplicar estatísticas)
 gameRouter.put('/:id/finish', authGuard, validateRequest(finishGameSchema), finishGameController);
 
-
-
-
-//lobby
-// Rota para eliminar um jogo
+// Apagar jogo
 gameRouter.delete('/:id', authGuard, deleteGameController);
 
-// Rota para um jogador se inscrever em um jogo
+// Entrar no jogo (lobby)
 gameRouter.post('/:id/join', authGuard, validateRequest(joinGameSchema), joinGameController);
-
 
 export default gameRouter;

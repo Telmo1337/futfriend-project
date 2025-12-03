@@ -52,7 +52,7 @@ export async function getGameById(id) {
       createdBy: { select: { id: true, nickname: true } },
       playersGame: {
         include: {
-          user: { select: { id: true, nickname: true, firstName: true, lastName: true } },
+          user: { select: { nickname: true} },
         },
       },
     },
@@ -70,11 +70,20 @@ export async function updateGame(gameId, data, user) {
     return { error: "Jogo não encontrado.", status: 404 };
   }
 
-  // Permissões: criador OU admin
+  // Permissões
   if (user.id !== game.createdById && user.role !== "ADMIN") {
     return { error: "Não tens permissão para atualizar este jogo.", status: 403 };
   }
 
+  // Se o jogo estiver finalizado, NÃO permitir alterações
+  if (game.state === "finished") {
+    return { 
+      error: "Não é possível alterar um jogo que já foi finalizado.", 
+      status: 400 
+    };
+  }
+
+  // Atualização permitida
   const updated = await prisma.game.update({
     where: { id: gameId },
     data,
@@ -82,6 +91,7 @@ export async function updateGame(gameId, data, user) {
 
   return { game: updated };
 }
+
 
 /* ============================================================
    5. Finalizar jogo + atualizar estatísticas dos jogadores
@@ -96,60 +106,60 @@ export async function finishGame(gameId, user) {
     return { error: "Jogo não encontrado.", status: 404 };
   }
 
-  // Apenas criador ou admin pode finalizar
   if (user.id !== game.createdById && user.role !== "ADMIN") {
-    return { error: "Não tens permissão para finalizar este jogo.", status: 403 };
+    return { error: "Sem permissão.", status: 403 };
   }
 
   if (game.state === "finished") {
-    return { error: "O jogo já foi finalizado anteriormente.", status: 400 };
+    return { error: "Jogo já foi finalizado.", status: 400 };
   }
 
-  const { goalsA, goalsB } = game;
+  // -------------------------------------
+  // 1. Calcular resultado automaticamente
+  // -------------------------------------
+  const goalsA = game.playersGame
+    .filter(pg => pg.team === "teamA")
+    .reduce((acc, pg) => acc + pg.goals, 0);
+
+  const goalsB = game.playersGame
+    .filter(pg => pg.team === "teamB")
+    .reduce((acc, pg) => acc + pg.goals, 0);
 
   // Determinar vencedor
   let winner = null;
   if (goalsA > goalsB) winner = "teamA";
   if (goalsB > goalsA) winner = "teamB";
-  // se empate → winner = null
 
-  // Atualizar estatísticas jogador a jogador
+  // -------------------------------------
+  // 2. Atualizar estatísticas de cada user
+  // -------------------------------------
   for (const pg of game.playersGame) {
-    const userStats = {};
-
-    // Adicionar golos individuais
-    userStats.goals = pg.goals;
-
-    // Vitória / empate / derrota
-    if (winner === null) {
-      // Empate
-      userStats.draws = 1;
-    } else if (pg.team === winner) {
-      userStats.victories = 1;
-    } else {
-      userStats.losses = 1;
-    }
-
-    // Atualizar estatísticas acumuladas
     await prisma.user.update({
       where: { id: pg.userId },
       data: {
         goals: { increment: pg.goals },
-        victories: { increment: userStats.victories ?? 0 },
-        losses: { increment: userStats.losses ?? 0 },
-        draws: { increment: userStats.draws ?? 0 },
+        victories: { increment: winner === pg.team ? 1 : 0 },
+        losses: { increment: winner && winner !== pg.team ? 1 : 0 },
+        draws: { increment: winner === null ? 1 : 0 },
       },
     });
   }
 
-  // Marcar jogo como finalizado
+  // -------------------------------------
+  // 3. Finalizar jogo + guardar resultado
+  // -------------------------------------
   const finishedGame = await prisma.game.update({
     where: { id: gameId },
-    data: { state: "finished" },
+    data: {
+      goalsA,
+      goalsB,
+      state: "finished",
+    }
   });
 
   return { game: finishedGame };
 }
+
 
 /* ============================================================
    6. Apagar jogo
