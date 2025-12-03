@@ -4,34 +4,59 @@ import { prisma } from '../../db/prisma.js';
 
 
 export async function getPlayersByGame(gameId) {
-  // Lista jogadores inscritos com os dados do utilizador incluídos
-  const playersGames = await prisma.playersGame.findMany({
+  return prisma.playersGame.findMany({
     where: { gameId },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          nickname: true
+        }
+      }
+    }
   });
-
-  return playersGames;
 }
 
+
+export async function getGameById(id) {
+  return prisma.game.findUnique({
+    where: { id },
+    include: {
+      createdBy: {
+        select: {
+          id: true,
+          nickname: true
+        }
+      },
+      playersGame: {
+        select: {
+          id: true,
+          team: true,
+          goals: true,
+          user: {
+            select: {
+              id: true,
+              nickname: true
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+
+
+export async function getGameParticipants(gameId) {
+  const total = await prisma.playersGame.count({ where: { gameId } });
+  return { gameId, totalParticipants: total };
+}
+
+
+
 export async function updatePlayerStats(id, data) {
-  // Atualiza estatísticas como golos ou cartões
-  const updated = await prisma.playersGame.update({
+  return prisma.playersGame.update({
     where: { id },
     data,
   });
-
-  return updated;
-}
-
-export async function getGameParticipants(gameId) {
-  // Devolve lista completa e contagem para cada jogo
-  const players = await prisma.playersGame.findMany({
-    where: { gameId },
-    include: { user: true },
-  });
-
-  return {
-    gameId,
-    totalParticipants: players.length,
-  };
 }
