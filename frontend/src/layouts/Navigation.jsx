@@ -8,7 +8,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 export const NAVIGATION = [
   {
     kind: "header",
-    title: "FutFriend",
+    title: "O meu painel",
   },
   {
     segment: "dashboard",

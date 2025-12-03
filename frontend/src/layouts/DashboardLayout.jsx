@@ -1,30 +1,33 @@
-import React from "react";
+
 import { Outlet } from "react-router-dom";
 
-import { AppProvider } from "@toolpad/core/AppProvider";
+import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { DashboardLayout as ToolpadDashboardLayout } from "@toolpad/core/DashboardLayout";
 
+
 import { NAVIGATION } from "./Navigation";
-
-import FF from "@/assets/FF.png";
-
 import theme from "@/theme";
 
 
 const DashboardLayout = () => {
   return (
-    <AppProvider
+    <ReactRouterAppProvider
       navigation={NAVIGATION}
       theme={theme}
-      branding={{ 
+      colorSchemeStorageKey="futfriend-color"
+      branding={{
         title: "FutFriend",
         logo: false,
       }}
+      
+
     >
-      <ToolpadDashboardLayout>
+      <ToolpadDashboardLayout
+
+      >
         <Outlet />
       </ToolpadDashboardLayout>
-    </AppProvider>
+    </ReactRouterAppProvider>
   );
 };
 
