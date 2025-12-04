@@ -11,14 +11,14 @@ export default function useRegisterForm() {
     firstName: "",
     lastName: "",
     email: "",
-    nickName: "",
+    nickname: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const isDisabled =
-    !form.firstName || !form.lastName || !form.email || !form.nickName || !form.password;
+    !form.firstName || !form.lastName || !form.email || !form.nickname || !form.password;
 
   const handleChange = (field) => (e) => {
     setError("");

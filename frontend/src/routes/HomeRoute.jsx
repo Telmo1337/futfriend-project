@@ -1,15 +1,13 @@
 import { Navigate } from "react-router-dom";
 
-const HomeRoute = () => {
+const HomeRoute = ({ children }) => {
   const token = localStorage.getItem("token");
 
-  // se o utilizador estiver logado redireciona para o dashboard
-  // caso contrário vai para login
-  return token ? (
-    <Navigate to="/dashboard" replace />
-  ) : (
-    <Navigate to="/login" replace />
-  );
+  // Se estiver logado → dashboard
+  if (token) return <Navigate to="/dashboard" replace />;
+
+  // Se não estiver logado → renderiza a landing page
+  return children;
 };
 
 export default HomeRoute;

@@ -23,13 +23,16 @@ import Notifications from "@/views/Notifications/Notifications";
 import Help from "@/views/Help/Help";
 import Settings from "@/views/Settings/Settings";
 
+//landing page
+import HomePage from "@/pages/LandingPage/HomePage"
+
 
 const AppRoutes = () => {
   return (
     <Routes>
 
       {/*rota raiz*/}
-      <Route path="/" element={<HomeRoute />} />
+      <Route path="/" element={<HomeRoute><HomePage /></HomeRoute>} />
 
       {/* Rotas públicas */}
       <Route path="/login" element={<AuthLayout><LoginForm /></AuthLayout>} />
