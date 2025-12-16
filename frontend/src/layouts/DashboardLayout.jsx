@@ -9,6 +9,9 @@ import { NAVIGATION } from "./Navigation";
 import theme from "@/theme";
 
 
+import SidebarFooter from "./components/SidebarFooter";
+
+
 const DashboardLayout = () => {
   return (
     <ReactRouterAppProvider
@@ -19,11 +22,13 @@ const DashboardLayout = () => {
         title: "FutFriend",
         logo: false,
       }}
-      
+
 
     >
       <ToolpadDashboardLayout
-
+        slots={{
+          sidebarFooter: SidebarFooter,
+        }}
       >
         <Outlet />
       </ToolpadDashboardLayout>

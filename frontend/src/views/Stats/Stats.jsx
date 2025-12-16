@@ -1,12 +1,12 @@
 
 import {  Box,Typography } from "@mui/material";
 
-const Notifications = () => (
+const Stats = () => (
   <Box sx={{ p: 3 }}>
       <Typography variant="h4" mb={2}>
-      test
+        estatisticas
       </Typography>
     </Box>
 );
 
-export default Notifications;
+export default Stats;

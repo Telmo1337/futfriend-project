@@ -29,7 +29,7 @@ export default function useLoginForm() {
 
 
       await login(form);
-      navigate("/dashboard");
+      navigate("/painel");
 
 
     } catch (err) {

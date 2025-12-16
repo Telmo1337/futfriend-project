@@ -1,7 +1,7 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import PersonIcon from "@mui/icons-material/Person";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 
@@ -11,36 +11,36 @@ export const NAVIGATION = [
     title: "O meu painel",
   },
   {
-    segment: "dashboard",
-    title: "Dashboard",
+    segment: "painel",
+    title: "O meu Painel",
     icon: <DashboardIcon />,
   },
   {
-    segment: "games",
-    title: "Games",
+    segment: "jogos",
+    title: "Jogos",
     icon: <SportsSoccerIcon />,
   },
   {
-    segment: "profile",
-    title: "Profile",
-    icon: <PersonIcon />,
+    segment: "estatisticas",
+    title: "Estatísticas",
+    icon: <LeaderboardIcon />,
   },
   {
-    segment: "notifications",
-    title: "Notifications",
-    icon: <NotificationsIcon />,
+    segment: "perfil",
+    title: "Perfil",
+    icon: <PersonIcon />,
   },
   {
     kind: "divider",
   },
   {
-    segment: "help",
-    title: "Help",
+    segment: "ajuda",
+    title: "Ajuda",
     icon: <HelpOutlineIcon />,
   },
   {
-    segment: "settings",
-    title: "Settings",
+    segment: "definicoes",
+    title: "Definições",
     icon: <SettingsIcon />,
   },
 ];

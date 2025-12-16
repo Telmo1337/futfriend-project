@@ -19,7 +19,7 @@ import NoFound from "@/pages/NoFound";
 import Dashboard from "@/views/Dashboard/Dashboard";
 import Games from "@/views/Games/Games";
 import Profile from "@/views/Profile/Profile";
-import Notifications from "@/views/Notifications/Notifications";
+import Stats from "@/views/Stats/Stats";
 import Help from "@/views/Help/Help";
 import Settings from "@/views/Settings/Settings";
 
@@ -48,12 +48,12 @@ const AppRoutes = () => {
           </ProtectedRoutes>
         }
       >
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="games" element={<Games />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="notifications" element={<Notifications />} />
-        <Route path="help" element={<Help />} />
-        <Route path="settings" element={<Settings />} />
+        <Route path="painel" element={<Dashboard />} />
+        <Route path="jogos" element={<Games />} />
+        <Route path="perfil" element={<Profile />} />
+        <Route path="estatisticas" element={<Stats />} />
+        <Route path="ajuda" element={<Help />} />
+        <Route path="definicoes" element={<Settings />} />
       </Route>
 
 
