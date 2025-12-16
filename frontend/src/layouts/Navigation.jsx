@@ -43,4 +43,5 @@ export const NAVIGATION = [
     title: "Definições",
     icon: <SettingsIcon />,
   },
+
 ];

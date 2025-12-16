@@ -7,7 +7,7 @@ const theme = createTheme({
 
   colorSchemes: {
     // -----------------------------
-    // 🌞 LIGHT MODE
+    //  LIGHT MODE
     // -----------------------------
     light: {
       palette: {
@@ -34,7 +34,7 @@ const theme = createTheme({
         },
       },
 
-      // 👉 OVERRIDES AQUI (LIGHT MODE)
+      // OVERRIDES AQUI (LIGHT MODE)
       components: {
         MuiListItemButton: {
           styleOverrides: {
@@ -72,7 +72,7 @@ const theme = createTheme({
     },
 
     // -----------------------------
-    // 🌑 DARK MODE
+    //  DARK MODE
     // -----------------------------
     dark: {
       palette: {
@@ -93,7 +93,7 @@ const theme = createTheme({
         },
       },
 
-      // 👉 OVERRIDES AQUI (DARK MODE)
+      // OVERRIDES AQUI (DARK MODE)
       components: {
         MuiListItemButton: {
           styleOverrides: {

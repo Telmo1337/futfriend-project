@@ -22,25 +22,44 @@ export async function getAllGames(page, limit) {
     prisma.game.findMany({
       skip,
       take: limit,
+      orderBy: { createdAt: "desc" },
       include: {
         createdBy: {
           select: { id: true, nickname: true },
         },
+        playersGame: true, 
       },
-      orderBy: { createdAt: "desc" },
     }),
-
     prisma.game.count(),
   ]);
+
+  const gamesFormatted = games.map((game) => {
+    const teamAPlayers = game.playersGame.filter(p => p.team === "teamA").length;
+    const teamBPlayers = game.playersGame.filter(p => p.team === "teamB").length;
+
+    return {
+      id: game.id,
+      teamA: game.teamA,
+      teamB: game.teamB,
+      date: game.date,
+      location: game.location,
+      type: game.type,
+      state: game.state, // scheduled | ongoing | finished
+      maxPlayersPerTeam: game.maxPlayersPerTeam,
+      teamAPlayers,
+      teamBPlayers,
+    };
+  });
 
   return {
     page,
     limit,
     total,
     totalPages: Math.ceil(total / limit),
-    games,
+    games: gamesFormatted,
   };
 }
+
 
 /* ============================================================
    3. Obter jogo por ID

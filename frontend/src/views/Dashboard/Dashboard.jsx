@@ -1,22 +1,23 @@
-import { Box, Typography} from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
+import DashboardStats from "./components/DashboardStats";
+import DashboardGames from "./components/DashboardGames";
 
-
-//components
-
-
-//hooks
-
-
-const Dashboard = () => {
-
-  //  Conteúdo principal
+export default function Dashboard() {
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" mb={2}>
-        o meu painel
+    <Box>
+      <Typography variant="h5" fontWeight={600} mb={3}>
+        O meu painel
       </Typography>
+
+      <DashboardStats />
+
+      <Divider sx={{ my: 4 }} />
+
+      <Typography variant="h6" mb={2}>
+        Jogos disponíveis
+      </Typography>
+
+      <DashboardGames />
     </Box>
   );
-};
-
-export default Dashboard;
+}
