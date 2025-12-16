@@ -141,6 +141,26 @@ const theme = createTheme({
 
   // Buttons globals (sim, estes podem ficar fora)
   components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          padding: "24px",
+          boxShadow: "0px 4px 14px rgba(0,0,0,0.08)",
+        },
+      },
+    },
+
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          boxShadow: "0px 4px 14px rgba(0,0,0,0.08)",
+        },
+      },
+    },
+
+
     MuiButtonBase: { defaultProps: { disableRipple: true } },
 
     MuiButton: {

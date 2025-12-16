@@ -1,4 +1,4 @@
-import { Grid, Skeleton, Typography, Box } from "@mui/material";
+import { Box, Typography, Skeleton } from "@mui/material";
 import useDashboardGames from "../hooks/useDashboardGames";
 import DashboardGameCard from "./DashboardGameCard";
 
@@ -7,33 +7,52 @@ export default function DashboardGames() {
 
   if (loading) {
     return (
-      <Grid container spacing={3}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            lg: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
+          },
+          gap: 3,
+        }}
+      >
         {[1, 2, 3].map((i) => (
-          <Grid item xs={12} md={4} key={i}>
-            <Skeleton height={220} />
-          </Grid>
+          <Skeleton key={i} height={220} />
         ))}
-      </Grid>
+      </Box>
     );
   }
 
   if (games.length === 0) {
     return (
-      <Box sx={{ py: 4, textAlign: "center" }}>
-        <Typography color="text.secondary">
-          Não existem jogos agendados ou em andamento.
-        </Typography>
-      </Box>
+      <Typography color="text.secondary">
+        Não existem jogos agendados ou em andamento.
+      </Typography>
     );
   }
 
   return (
-    <Grid container spacing={3}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "1fr 1fr",
+          lg: "repeat(3, 1fr)",
+          xl: "repeat(4, 1fr)",
+        },
+        gap: 3,
+      }}
+    >
       {games.map((game) => (
-        <Grid item xs={12} md={4} key={game.id}>
-          <DashboardGameCard game={game} />
-        </Grid>
+        <DashboardGameCard key={game.id} game={game} />
       ))}
-    </Grid>
+
+
+      
+    </Box>
   );
 }
