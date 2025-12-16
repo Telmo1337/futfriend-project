@@ -8,7 +8,7 @@ export default function useDashboardGames() {
   useEffect(() => {
     async function fetchGames() {
       try {
-        const res = await API.get("/games?page=1&limit=4");
+        const res = await API.get("/games?page=1&limit=5");
         setGames(res.data.games || []);
       } catch (err) {
         console.error(err);

@@ -47,3 +47,26 @@ export async function updatePlayerStats(id, data, user) {
     data,
   });
 }
+
+
+export async function leaveGame(gameId, userId) {
+  const participation = await prisma.playersGame.findUnique({
+    where: {
+      userId_gameId: { userId, gameId },
+    },
+  });
+
+  if (!participation) {
+    return {
+      error: "Não estás inscrito neste jogo.",
+      status: 400,
+    };
+  }
+
+  await prisma.playersGame.delete({
+    where: { id: participation.id },
+  });
+
+  return { success: true };
+}
+

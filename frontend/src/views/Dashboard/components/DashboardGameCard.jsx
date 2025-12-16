@@ -1,6 +1,5 @@
 import {
   Box,
-  Paper,
   Typography,
   Button,
   Stack,
@@ -8,55 +7,69 @@ import {
   Avatar,
   AvatarGroup,
   Tooltip,
+  Paper,
 } from "@mui/material";
 
 import { gameStateConfig } from "../constants/gameStateConfig";
 
 import useGamePlayersCount from "../hooks/useGamePlayersCount";
 import useGamePlayers from "../hooks/useGamePlayers";
+import useJoinGame from "../hooks/useJoinGame";
+import useAuth from "@/components/auth/hooks/useAuth";
+import useLeaveGame from "../hooks/useLeaveGame";
+
 
 export default function DashboardGameCard({ game }) {
+  const { user } = useAuth();
 
-  const { count, max } = useGamePlayersCount(
-    game.id,
-    game.maxPlayersPerTeam
-  );
+  // jogadores
+  const {
+    players,
+    refetch: refetchPlayers,
+  } = useGamePlayers(game.id);
 
+  // contador
+  const {
+    count,
+    max,
+    refetch: refetchCount,
+  } = useGamePlayersCount(game.id, game.maxPlayersPerTeam);
+
+  // join game
+  const { join, loading: joining } = useJoinGame(game.id, () => {
+    refetchPlayers();
+    refetchCount();
+  });
+
+  // leave game
+  const { leave, loading: leaving } = useLeaveGame(game.id, () => {
+    refetchPlayers();
+    refetchCount();
+  });
 
   const state = gameStateConfig[game.state];
 
-  let gameTypeLabel;
+  const isUserInGame = players.some(
+    (p) => p.user.id === user?.id
+  );
 
-  if (game.type === "FIVE_A_SIDE") {
-    gameTypeLabel = "5x5";
-  } else if (game.type === "SEVEN_A_SIDE") {
-    gameTypeLabel = "7x7";
-  } else if (game.type === "ELEVEN_A_SIDE") {
-    gameTypeLabel = "11x11";
-  } else {
-    gameTypeLabel = game.type;
-  }
-
-
-  const players = useGamePlayers(game.id);
+  let gameTypeLabel = "5x5";
+  if (game.type === "SEVEN_A_SIDE") gameTypeLabel = "7x7";
+  if (game.type === "ELEVEN_A_SIDE") gameTypeLabel = "11x11";
 
   return (
-    <Paper sx={{
-      p: 4,
-      borderRadius: 3,
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-    }}>
+    <Paper
+      sx={{
+        p: 4,
+        borderRadius: 3,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Stack spacing={2} sx={{ flexGrow: 1 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        {/* HEADER */}
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography fontWeight={600}>
             {game.teamA} vs {game.teamB}
           </Typography>
@@ -65,7 +78,6 @@ export default function DashboardGameCard({ game }) {
             label={state.label}
             color={state.color}
             size="small"
-            sx={{ width: "fit-content" }}
           />
         </Box>
 
@@ -91,12 +103,12 @@ export default function DashboardGameCard({ game }) {
         </Typography>
 
         <Typography variant="body2">
-          <b>Jogadores:</b>{" "}
-          {count !== undefined ? count : "—"} / {max}
+          <b>Jogadores:</b> {count} / {max}
         </Typography>
 
+        {/* AVATARS */}
         {players.length > 0 && (
-          <AvatarGroup max={6} sx={{ justifyContent: "flex-start", mt: 1 }}>
+          <AvatarGroup max={6} sx={{ mt: 1 }}>
             {players.map((p) => (
               <Tooltip key={p.id} title={p.user.nickname}>
                 <Avatar sx={{ width: 32, height: 32 }}>
@@ -107,13 +119,28 @@ export default function DashboardGameCard({ game }) {
           </AvatarGroup>
         )}
 
-
-        <Box sx={{ mt: "auto" }}>
+        {/* ACTIONS */}
+        <Box sx={{ mt: "auto", display: "flex", gap: 1 }}>
           <Button variant="outlined" size="small" fullWidth>
             Ver detalhes
           </Button>
+
+          {game.state === "scheduled" && (
+            <Button
+              variant={isUserInGame ? "outlined" : "contained"}
+              color={isUserInGame ? "error" : "primary"}
+              size="small"
+              fullWidth
+              disabled={joining || leaving || (!isUserInGame && count >= max)}
+              onClick={() =>
+                isUserInGame ? leave() : join("teamA")
+              }
+            >
+              {isUserInGame ? "Sair" : "Entrar"}
+            </Button>
+          )}
+
         </Box>
-        
       </Stack>
     </Paper>
   );

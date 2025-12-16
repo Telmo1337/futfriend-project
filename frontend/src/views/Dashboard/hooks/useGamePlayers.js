@@ -1,25 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "@/api/axios";
 
 export default function useGamePlayers(gameId) {
   const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchPlayers = useCallback(async () => {
     if (!gameId) return;
 
-    async function fetchPlayers() {
+    try {
       const res = await API.get(`/players/game/${gameId}/players`);
-
-      
-      const data = Array.isArray(res.data)
-        ? res.data
-        : res.data.players;
-
-      setPlayers(data || []);
+      setPlayers(res.data || []);
+    } catch (err) {
+      console.error(err);
+      setPlayers([]);
+    } finally {
+      setLoading(false);
     }
-
-    fetchPlayers();
   }, [gameId]);
 
-  return players;
+  useEffect(() => {
+    fetchPlayers();
+  }, [fetchPlayers]);
+
+  return {
+    players,
+    loading,
+    refetch: fetchPlayers,
+  };
 }

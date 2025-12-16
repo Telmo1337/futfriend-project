@@ -1,23 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "@/api/axios";
 
 export default function useGamePlayersCount(gameId, maxPerTeam) {
-  const [count, setCount] = useState();
+  const [count, setCount] = useState(0);
 
-  useEffect(() => {
+  const fetchCount = useCallback(async () => {
     if (!gameId) return;
 
-    async function fetchPlayers() {
+    try {
       const res = await API.get(`/players/game/${gameId}`);
-       //console.log( res.data);
-      setCount(res.data.totalParticipants ?? 0);
+      setCount(res.data.totalParticipants || 0);
+    } catch (err) {
+      console.error(err);
+      setCount(0);
     }
-
-    fetchPlayers();
   }, [gameId]);
+
+  useEffect(() => {
+    fetchCount();
+  }, [fetchCount]);
 
   return {
     count,
     max: maxPerTeam * 2,
+    refetch: fetchCount,
   };
 }

@@ -4,6 +4,7 @@ import {
   getGameParticipants,
   getPlayersByGame,
   updatePlayerStats,
+  leaveGame,
 } from '../services/playersGameService.js';
 
 
@@ -46,3 +47,25 @@ export async function countPlayersByGameController(req, res, next) {
     next(err);
   }
 }
+
+
+
+export async function leaveGameController(req, res, next) {
+  try {
+    const { gameId } = req.validated.params;
+    const userId = req.user.id;
+
+    const result = await leaveGame(gameId, userId);
+
+    if (result.error) {
+      return res.status(result.status).json({ error: result.error });
+    }
+
+    return res.status(200).json({
+      message: "Saíste do jogo com sucesso.",
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
