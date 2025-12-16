@@ -24,6 +24,9 @@ export default function CreateGameModal({ open, onClose }) {
     window.location.reload(); // depois trocamos por refetch
   });
 
+
+
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Criar novo jogo</DialogTitle>
@@ -52,8 +55,12 @@ export default function CreateGameModal({ open, onClose }) {
             value={form.date}
             onChange={handleChange("date")}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              min: new Date().toISOString().slice(0, 16),
+            }}
             fullWidth
           />
+
 
           <TextField
             label="Local"

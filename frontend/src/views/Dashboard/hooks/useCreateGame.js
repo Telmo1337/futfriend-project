@@ -21,6 +21,11 @@ export default function useCreateGame(onSuccess) {
   }
 
   async function submit() {
+    if (!form.teamA || !form.teamB || !form.date || !form.location) {
+      setError("Preenche todos os campos obrigatórios.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -30,15 +35,14 @@ export default function useCreateGame(onSuccess) {
       };
 
       await API.post("/games", payload);
-
-      onSuccess?.(); // callback opcional (refresh, close modal, etc.)
+      onSuccess?.();
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.error || "Erro ao criar jogo.");
     } finally {
       setLoading(false);
     }
   }
+
 
   return {
     form,

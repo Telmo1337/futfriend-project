@@ -4,12 +4,26 @@ import { prisma } from "../../db/prisma.js";
    1. Criar jogo
 ============================================================ */
 export async function createGame(data, userId) {
-  return prisma.game.create({
+  const gameDate = new Date(data.date);
+  const now = new Date();
+
+  // bloquear
+  if (gameDate <= now) {
+    return {
+      error: "Não é possível criar um jogo no passado.",
+      status: 400,
+    };
+  }
+
+  const game = await prisma.game.create({
     data: {
       ...data,
       createdById: userId,
+      state: "scheduled",
     },
   });
+
+  return game;
 }
 
 /* ============================================================
@@ -17,6 +31,32 @@ export async function createGame(data, userId) {
 ============================================================ */
 export async function getAllGames(page, limit) {
   const skip = (page - 1) * limit;
+
+  const now = new Date();
+
+  await prisma.game.updateMany({
+    where: {
+      state: "scheduled",
+      date: {
+        lte: now,
+      },
+    },
+    data: {
+      state: "ongoing",
+    },
+  });
+
+  await prisma.game.updateMany({
+    where: {
+      state: "ongoing",
+      date: {
+        lte: new Date(Date.now() - 90 * 60 * 1000),
+      },
+    },
+    data: {
+      state: "finished",
+    },
+  });
 
   const [games, total] = await Promise.all([
     prisma.game.findMany({
@@ -27,7 +67,7 @@ export async function getAllGames(page, limit) {
         createdBy: {
           select: { id: true, nickname: true },
         },
-        playersGame: true, 
+        playersGame: true,
       },
     }),
     prisma.game.count(),

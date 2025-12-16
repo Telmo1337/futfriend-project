@@ -16,12 +16,18 @@ import {
 ------------------------------ */
 export async function createGameController(req, res, next) {
   try {
-    const newGame = await createGame(req.validated.body, req.user.id);
-    res.status(201).json(newGame);
+    const result = await createGame(req.validated.body, req.user.id);
+
+    if (result?.error) {
+      return res.status(result.status).json({ error: result.error });
+    }
+
+    return res.status(201).json(result);
   } catch (err) {
     next(err);
   }
 }
+
 
 /* -----------------------------
    Listar jogos (com paginação)
