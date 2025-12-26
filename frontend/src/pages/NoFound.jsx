@@ -1,5 +1,5 @@
 // Components
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 
 const NotFound = () => {
   return (
@@ -47,6 +47,7 @@ const NotFound = () => {
           color="primary"
           fullWidth
           sx={{ mt: 2, py: 1.2 }}
+         
         >
          Voltar para o início...
         </Button>

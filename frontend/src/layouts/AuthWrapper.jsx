@@ -5,10 +5,10 @@ export default function AuthWrapper({ children }) {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: (theme) => theme.palette.grey[100],
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "#f9f9f9",
         px: 2,
       }}
     >
