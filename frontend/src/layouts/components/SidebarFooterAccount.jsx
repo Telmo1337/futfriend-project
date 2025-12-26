@@ -11,6 +11,7 @@ import Stack from "@mui/material/Stack";
 function SidebarFooterAccount({ mini }) {
   return (
     <Account
+      localeText={{accountSignOutLabel: 'Terminar Sessão'}}
       slots={{
         preview: (props) => (
           <>

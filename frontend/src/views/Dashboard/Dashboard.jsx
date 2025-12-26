@@ -14,7 +14,7 @@ export default function Dashboard() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-     <Box sx={{ p: { xs: 2, md: 5 } }}>
+     <Box sx={{ p: { xs: 2, md: 3 } }}>
       <Typography variant="h5" fontWeight={600}>
         O meu painel
       </Typography>

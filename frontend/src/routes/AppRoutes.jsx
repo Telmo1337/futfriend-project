@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
 // Layouts
-import AuthLayout from "@/layouts/AuthLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
 
 // Routes (guards)
@@ -9,8 +8,8 @@ import ProtectedRoutes from "@/routes/ProtectedRoutes";
 import HomeRoute from "@/routes/HomeRoute";
 
 // Auth Components
-import LoginForm from "@/components/auth/LoginForm";
-import RegisterForm from "@/components/auth/RegisterForm";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
 
 // Pages
 import NoFound from "@/pages/NoFound";
@@ -27,6 +26,7 @@ import Settings from "@/views/Settings/Settings";
 import HomePage from "@/pages/LandingPage/HomePage"
 
 
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -35,8 +35,8 @@ const AppRoutes = () => {
       <Route path="/" element={<HomeRoute><HomePage /></HomeRoute>} />
 
       {/* Rotas públicas */}
-      <Route path="/login" element={<AuthLayout><LoginForm /></AuthLayout>} />
-      <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
+      <Route path="/login" element={<Login/>} />
+      <Route path="/register" element={<Register/>} />
 
       {/* Rota protegida: Dashboard (apenas uma) */}
       {/* Protected Area (Toolpad) */}
