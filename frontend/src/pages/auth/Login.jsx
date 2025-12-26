@@ -1,12 +1,9 @@
-import { Link } from "react-router-dom";
 import {
   Stack,
   Typography,
   Box,
   Button,
   TextField,
-  Checkbox,
-  FormControlLabel,
   IconButton,
   InputAdornment,
 } from "@mui/material";
@@ -18,6 +15,11 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Navbar from "../LandingPage/Navbar";
 
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@mui/material/Link";
+import Footer from "../LandingPage/Footer";
+
+
 
 export default function Login() {
   const { form, error, handleChange, handleSubmit } = useLoginForm();
@@ -26,7 +28,7 @@ export default function Login() {
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <AuthWrapper>
         <AuthCard>
           <Stack spacing={4}>
@@ -40,10 +42,10 @@ export default function Login() {
             {/* Title */}
             <Stack spacing={1} alignItems="center">
               <Typography variant="h4" fontWeight={600}>
-                Hi, Welcome Back
+                Olá de novo!
               </Typography>
               <Typography color="text.secondary">
-                Enter your credentials to continue
+                Introduza os seus dados para aceder à sua conta
               </Typography>
             </Stack>
 
@@ -51,7 +53,7 @@ export default function Login() {
             <Box component="form" onSubmit={handleSubmit}>
               <Stack spacing={3}>
                 <TextField
-                  label="Email Address / Username"
+                  label="Endereço de Email / Nickname"
                   value={form.identifier}
                   onChange={handleChange("identifier")}
                   fullWidth
@@ -88,21 +90,27 @@ export default function Login() {
                   size="large"
                   sx={{ py: 1.3 }}
                 >
-                  Sign In
+                  Entrar
                 </Button>
               </Stack>
             </Box>
 
-            {/* Footer */}
+
             <Typography align="center" variant="body2">
-              Don&apos;t have an account?{" "}
-              <Link to="/register" style={{ textDecoration: "none" }}>
-                Sign up
+              Ainda não tens conta? Regista-te{" "}
+              <Link
+                component={RouterLink}
+                to="/register"
+                underline="always"
+              >
+                aqui
               </Link>
             </Typography>
+
           </Stack>
         </AuthCard>
       </AuthWrapper>
+      <Footer  />
     </>
   );
 }

@@ -1,15 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@mui/material/Link";
+
 import {
     Stack,
     Typography,
     Box,
     Button,
     TextField,
-    Checkbox,
-    FormControlLabel,
     IconButton,
     InputAdornment,
-    Grid,
 } from "@mui/material";
 import useRegisterForm from "@/components/auth/hooks/useRegisterForm";
 import AuthWrapper from "@/layouts/AuthWrapper";
@@ -20,6 +19,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import { useState } from "react";
 import Navbar from "../LandingPage/Navbar";
+import Footer from "../LandingPage/Footer";
 
 export default function Register() {
     const {
@@ -58,15 +58,15 @@ export default function Register() {
                         {/* Title */}
                         <Stack spacing={1} alignItems="center">
                             <Typography variant="h4" fontWeight={600}>
-                                Sign up
+                                Registo
                             </Typography>
                             <Typography color="text.secondary">
-                                Enter your details to continue
+                                Introduza os seus dados para criar a sua conta
                             </Typography>
                         </Stack>
 
                         <Typography align="center" variant="subtitle2">
-                            Sign up with Email address
+                            Crie a sua conta e junte-se à comunidade FutFriend!
                         </Typography>
 
                         {/* Form */}
@@ -74,21 +74,21 @@ export default function Register() {
                             <Stack spacing={2}>
                                 {/* First Name */}
                                 <TextField
-                                    label="First Name"
+                                    label="Primeiro Nome"
                                     value={form.firstName}
                                     onChange={handleChange("firstName")}
                                     fullWidth
                                 />
                                 {/* Last Name */}
                                 <TextField
-                                    label="Last Name"
+                                    label="Último Nome"
                                     value={form.lastName}
                                     onChange={handleChange("lastName")}
                                     fullWidth
                                 />
                                 {/* Email */}
                                 <TextField
-                                    label="Email Address / Username"
+                                    label="Email"
                                     value={form.email}
                                     onChange={handleChange("email")}
                                     fullWidth
@@ -168,21 +168,27 @@ export default function Register() {
                                     disabled={isDisabled || console.log("oops")}
                                     sx={{ py: 1.3 }}
                                 >
-                                    Sign Up
+                                    Registar
                                 </Button>
                             </Stack>
                         </Box>
 
-                        {/* Footer */}
+
                         <Typography align="center" variant="body2">
-                            Already have an account?{" "}
-                            <Link to="/login" style={{ textDecoration: "none" }}>
-                                Sign in
+                            Já tens uma conta? Clicar{" "}
+                            <Link
+                                component={RouterLink}
+                                to="/login"
+                                underline="always"
+                            >
+                                aqui
                             </Link>
                         </Typography>
+
                     </Stack>
                 </AuthCard>
             </AuthWrapper>
+            <Footer />
         </>
     );
 }
