@@ -8,6 +8,7 @@ import {
   getGamesController,
   updateGameController,
   finishGameController,
+  startGameController,
 } from '../controllers/gameController.js';
 
 import { validateRequest } from '../middlewares/validateRequest.js';
@@ -42,5 +43,9 @@ gameRouter.delete('/:id', authGuard, deleteGameController);
 
 // Entrar no jogo (lobby)
 gameRouter.post('/:id/join', authGuard, validateRequest(joinGameSchema), joinGameController);
+
+// Iniciar jogo
+gameRouter.put('/:id/start', authGuard, startGameController);
+
 
 export default gameRouter;

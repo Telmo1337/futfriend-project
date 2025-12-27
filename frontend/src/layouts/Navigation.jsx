@@ -12,7 +12,7 @@ export const NAVIGATION = [
   },
   {
     segment: "painel",
-    title: "O meu Painel",
+    title: "Painel",
     icon: <DashboardIcon />,
   },
   {

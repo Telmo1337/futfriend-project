@@ -8,7 +8,8 @@ import {
   getAllGames,
   getGameById,
   updateGame,
-  finishGame
+  finishGame,
+  startGame
 } from '../services/gameService.js';
 
 /* -----------------------------
@@ -151,6 +152,30 @@ export async function joinGameController(req, res, next) {
       player: result.playerGame
     });
 
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+/* -----------------------------
+   Iniciar jogo
+------------------------------ */
+export async function startGameController(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const result = await startGame(id, user);
+
+    if (result.error) {
+      return res.status(result.status).json({ error: result.error });
+    }
+
+    return res.status(200).json({
+      message: "Jogo iniciado com sucesso.",
+      game: result.game,
+    });
   } catch (err) {
     next(err);
   }

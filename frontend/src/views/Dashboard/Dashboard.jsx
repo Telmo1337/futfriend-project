@@ -16,7 +16,7 @@ export default function Dashboard() {
   return (
      <Box sx={{ p: { xs: 2, md: 3 } }}>
       <Typography variant="h5" fontWeight={600}>
-        O meu painel
+        Painel
       </Typography>
 
       <Box

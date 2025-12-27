@@ -9,6 +9,8 @@ import {
   Tooltip,
   Paper,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 
 import { gameStateConfig } from "../constants/gameStateConfig";
 
@@ -20,6 +22,9 @@ import useLeaveGame from "../hooks/useLeaveGame";
 
 
 export default function DashboardGameCard({ game }) {
+
+  const navigate = useNavigate();
+  
   const { user } = useAuth();
 
   // jogadores
@@ -121,7 +126,7 @@ export default function DashboardGameCard({ game }) {
 
         {/* ACTIONS */}
         <Box sx={{ mt: "auto", display: "flex", gap: 1 }}>
-          <Button variant="outlined" size="small" fullWidth>
+          <Button variant="outlined" size="small" fullWidth  onClick={() => navigate(`/jogos/${game.id}`)}>
             Ver detalhes
           </Button>
 

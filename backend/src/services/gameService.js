@@ -296,3 +296,35 @@ export async function joinGame(gameId, userId, team) {
 
   return { playerGame };
 }
+
+
+/* ============================================================
+   8. Iniciar jogo
+============================================================ */
+export async function startGame(gameId, user) {
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
+  });
+
+  if (!game) {
+    return { error: "Jogo não encontrado.", status: 404 };
+  }
+
+  // Apenas admin / criador
+  if (user.id !== game.createdById && user.role !== "ADMIN") {
+    return { error: "Sem permissão para iniciar o jogo.", status: 403 };
+  }
+
+  if (game.state !== "scheduled") {
+    return { error: "O jogo já foi iniciado ou terminado.", status: 400 };
+  }
+
+  const updatedGame = await prisma.game.update({
+    where: { id: gameId },
+    data: {
+      state: "ongoing",
+    },
+  });
+
+  return { game: updatedGame };
+}
