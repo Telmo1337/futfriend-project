@@ -1,29 +1,28 @@
-import { Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useState } from "react";
 import ScoreEditor from "./ScoreEditor";
 import ConfirmDialog from "./ConfirmDialog";
 
 export default function AdminActions({
   state,
+  players,
+  onGoalsChange,
   onStart,
   onFinish,
-  goalsA,
-  goalsB,
-  setGoalsA,
-  setGoalsB,
 }) {
   const [confirmStart, setConfirmStart] = useState(false);
   const [confirmFinish, setConfirmFinish] = useState(false);
 
   return (
-    <>
+    <Stack spacing={2}>
+      {/* ESTADO: AGENDADO */}
       {state === "scheduled" && (
         <>
           <Button
             variant="contained"
             color="success"
             onClick={() => setConfirmStart(true)}
-            sx={{ alignSelf: "center", mt: 2 }}
+            sx={{ alignSelf: "center" }}
           >
             Iniciar jogo
           </Button>
@@ -42,15 +41,23 @@ export default function AdminActions({
         </>
       )}
 
+      {/* ESTADO: EM ANDAMENTO */}
       {state === "ongoing" && (
         <>
           <ScoreEditor
-            goalsA={goalsA}
-            goalsB={goalsB}
-            setGoalsA={setGoalsA}
-            setGoalsB={setGoalsB}
-            onConfirm={() => setConfirmFinish(true)}
+            players={players}
+            onGoalsChange={onGoalsChange}
           />
+
+  
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ alignSelf: "flex-end", mt: 2 }}
+            onClick={() => setConfirmFinish(true)}
+          >
+            Terminar jogo
+          </Button>
 
           <ConfirmDialog
             open={confirmFinish}
@@ -65,6 +72,6 @@ export default function AdminActions({
           />
         </>
       )}
-    </>
+    </Stack>
   );
 }

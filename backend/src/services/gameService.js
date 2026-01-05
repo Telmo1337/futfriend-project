@@ -138,15 +138,29 @@ export async function updateGame(gameId, data, user) {
   if (game.state === "finished") {
     return {
       error: "Não é possível alterar um jogo que já foi finalizado.",
-      status: 400
+      status: 400,
     };
   }
 
-  // Não permitir alterar estado manualmente
+  // GRAVAR GOLOS DOS JOGADORES
+  if (data.playersGoals) {
+    for (const pg of data.playersGoals) {
+      await prisma.playersGame.update({
+        where: { id: pg.playerGameId },
+        data: { goals: pg.goals },
+      });
+    }
+
+    // remover para não ir parar ao prisma.game.update
+    delete data.playersGoals;
+  }
+
+  // Não permitir alterar campos calculados
   delete data.state;
   delete data.goalsA;
   delete data.goalsB;
 
+  // Atualizar apenas campos do jogo
   const updated = await prisma.game.update({
     where: { id: gameId },
     data,
@@ -154,6 +168,7 @@ export async function updateGame(gameId, data, user) {
 
   return { game: updated };
 }
+
 
 
 /* ============================================================

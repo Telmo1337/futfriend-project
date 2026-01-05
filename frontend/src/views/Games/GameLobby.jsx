@@ -15,15 +15,14 @@ import TeamColumn from "./components/TeamColumn";
 import AdminActions from "./components/AdminActions";
 import GameTimeline from "./components/GameTimeline";
 
-
 export default function GameLobby() {
   const { id } = useParams();
   const { user } = useAuth();
 
   const [game, setGame] = useState(null);
-  const [goalsA, setGoalsA] = useState(0);
-  const [goalsB, setGoalsB] = useState(0);
+  const [playersWithGoals, setPlayersWithGoals] = useState([]);
 
+  // 🔹 Buscar jogo
   const fetchGame = () =>
     API.get(`/games/${id}`).then((res) => setGame(res.data));
 
@@ -31,7 +30,16 @@ export default function GameLobby() {
     fetchGame();
   }, [id]);
 
+  // 🔹 Jogadores
   const { players, refetch } = useGamePlayers(id);
+
+  // 🔹 Inicializar jogadores editáveis (com golos)
+  useEffect(() => {
+    if (players.length) {
+      setPlayersWithGoals(players);
+    }
+  }, [players]);
+
   const { join } = useJoinGame(id, refetch);
   const { leave } = useLeaveGame(id, refetch);
 
@@ -49,19 +57,27 @@ export default function GameLobby() {
   const userEntry = players.find((p) => p.user.id === user?.id);
   const userTeam = userEntry?.team;
 
+  // 🔹 Alterar golos localmente
+  function handleGoalsChange(playerGameId, goals) {
+    setPlayersWithGoals((prev) =>
+      prev.map((p) =>
+        p.id === playerGameId ? { ...p, goals } : p
+      )
+    );
+  }
+
   return (
     <Stack spacing={4}>
       <GameInfoCard game={game} />
       <GameTimeline state={game.state} />
+
       {isAdmin && (
         <AdminActions
           state={game.state}
-          onStart={() => startGame(game)} 
-          onFinish={() => finishGame(goalsA, goalsB)}
-          goalsA={goalsA}
-          goalsB={goalsB}
-          setGoalsA={setGoalsA}
-          setGoalsB={setGoalsB}
+          players={playersWithGoals}
+          onGoalsChange={handleGoalsChange}
+          onStart={() => startGame(game)}
+          onFinish={() => finishGame(playersWithGoals)}
         />
       )}
 
@@ -78,7 +94,6 @@ export default function GameLobby() {
             onJoin={join}
             onLeave={leave}
           />
-
         </Grid>
 
         <Grid item xs={12} md={6}>

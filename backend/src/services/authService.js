@@ -24,7 +24,7 @@ export async function registerUser(data) {
       firstName: data.firstName,
       lastName: data.lastName,
       password: hashedPassword,
-      role: countUsers === 0 ? 'ADMIN' : 'USER', // ✔ PRIMEIRO = ADMIN
+      role: countUsers === 0 ? 'ADMIN' : 'USER', //  PRIMEIRO = ADMIN
     },
   });
 

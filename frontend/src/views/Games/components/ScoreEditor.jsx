@@ -1,31 +1,59 @@
-import { Stack, TextField, Button } from "@mui/material";
+import { Stack, TextField, Typography, Divider } from "@mui/material";
 
-export default function ScoreEditor({
-  goalsA,
-  goalsB,
-  setGoalsA,
-  setGoalsB,
-  onConfirm,
-}) {
+export default function ScoreEditor({ players, onGoalsChange }) {
+  const teamA = players.filter(p => p.team === "teamA");
+  const teamB = players.filter(p => p.team === "teamB");
+
+  const goalsA = teamA.reduce((a, p) => a + (p.goals || 0), 0);
+  const goalsB = teamB.reduce((a, p) => a + (p.goals || 0), 0);
+
   return (
     <Stack spacing={2}>
-      <TextField
-        label="Golos Equipa A"
-        type="number"
-        value={goalsA}
-        onChange={(e) => setGoalsA(+e.target.value)}
-      />
+      <Typography fontWeight={600}>
+        Resultado atual: {goalsA} - {goalsB}
+      </Typography>
 
-      <TextField
-        label="Golos Equipa B"
-        type="number"
-        value={goalsB}
-        onChange={(e) => setGoalsB(+e.target.value)}
-      />
+      <Divider />
 
-      <Button variant="contained" onClick={onConfirm}>
-        Confirmar resultado
-      </Button>
+      <Typography fontWeight={600}>Equipa A</Typography>
+      {teamA.map(p => (
+        <Stack key={p.id} direction="row" spacing={2} alignItems="center">
+          <Typography sx={{ minWidth: 120 }}>
+            {p.user.nickname}
+          </Typography>
+
+          <TextField
+            type="number"
+            size="small"
+            inputProps={{ min: 0 }}
+            value={p.goals ?? 0}
+            onChange={(e) =>
+              onGoalsChange(p.id, Number(e.target.value))
+            }
+          />
+        </Stack>
+      ))}
+
+      <Divider />
+
+      <Typography fontWeight={600}>Equipa B</Typography>
+      {teamB.map(p => (
+        <Stack key={p.id} direction="row" spacing={2} alignItems="center">
+          <Typography sx={{ minWidth: 120 }}>
+            {p.user.nickname}
+          </Typography>
+
+          <TextField
+            type="number"
+            size="small"
+            inputProps={{ min: 0 }}
+            value={p.goals ?? 0}
+            onChange={(e) =>
+              onGoalsChange(p.id, Number(e.target.value))
+            }
+          />
+        </Stack>
+      ))}
     </Stack>
   );
 }

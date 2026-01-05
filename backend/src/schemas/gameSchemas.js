@@ -24,9 +24,15 @@ export const updateGameSchema = z.object({
     location: z.string().optional(),
     type: gameTypeEnum.optional(),
     maxPlayersPerTeam: z.number().int().optional(),
-    state: z.enum(["scheduled", "ongoing", "finished"]).optional(),
+    playersGoals: z.array(
+      z.object({
+        playerGameId: z.string(),
+        goals: z.number().int().min(0),
+      })
+    ).optional(),
   }),
 });
+
 
 export const joinGameSchema = z.object({
   params: z.object({ id: z.string() }),
