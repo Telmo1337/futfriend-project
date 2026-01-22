@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Stack, Tabs, Tab, Button } from "@mui/material";
+import { Stack, Tabs, Tab, Button, Typography } from "@mui/material";
 
 import DashboardGames from "../Dashboard/components/DashboardGames";
 import CreateGameModal from "../Dashboard/components/CreateGameModal";
@@ -13,8 +13,10 @@ export default function Games() {
       {/* Header */}
       <Stack direction="row" justifyContent="space-between">
         <Stack>
-          <h2>Jogos</h2>
-          <p>Organiza e participa em jogos de futebol</p>
+
+          <Typography variant="h5" fontWeight={600}>
+              Jogos disponíveis
+            </Typography>
         </Stack>
 
         <Button variant="contained" onClick={() => setOpenCreate(true)}>

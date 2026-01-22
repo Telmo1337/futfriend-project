@@ -41,7 +41,7 @@ export default function Dashboard() {
               mb: 3,
             }}
           >
-            <Typography variant="h6">
+            <Typography variant="h6" fontWeight={600}>
               Jogos disponíveis
             </Typography>
 

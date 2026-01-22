@@ -53,7 +53,7 @@ export default function Login() {
             <Box component="form" onSubmit={handleSubmit}>
               <Stack spacing={3}>
                 <TextField
-                  label="Endereço de Email / Nickname"
+                  label="Email / Nickname"
                   value={form.identifier}
                   onChange={handleChange("identifier")}
                   fullWidth

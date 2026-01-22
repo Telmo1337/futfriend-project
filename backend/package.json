@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "projectFutFriend": "docker compose down -v && docker compose up -d --build",
-    "projectFutFriend-stop": "docker compose down -v"
+    "FF": "docker compose down -v && docker compose up -d --build",
+    "FF-stop": "docker compose down -v"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
