@@ -10,6 +10,7 @@ import userRouter from './src/routes/userRoutes.js';
 import gameRouter from './src/routes/gameRoutes.js';
 import playersGameRouter from './src/routes/playersGameRoutes.js';
 import authRouter from './src/routes/authRoutes.js';
+import statsRouter from './src/routes/statsRouter.js';
 
 //importar middleware global
 import {errorHandler} from './src/middlewares/errorHandler.js';
@@ -30,6 +31,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/games', gameRouter);
 app.use('/api/v1/players', playersGameRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/stats', statsRouter);
 
 
 //primeiro parametro é a rota, segundo é a função que será executada quando alguém acessar essa rota
