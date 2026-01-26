@@ -18,6 +18,7 @@ export const updateUserSchema = z.object({
     email: z.string().email('Email inválido').optional(),
     firstName: z.string().optional(),
     lastName: z.string().optional(),
+    nickname: z.string().min(3, 'Nickname deve ter pelo menos 3 caracteres').optional(),
     password: z.string().optional(),
     goals: z.number().int().optional(),
     victories: z.number().int().optional(),

@@ -25,7 +25,7 @@ export const STEPS = [
     icon: "soccer",
     title: "Cria ou junta-te a um jogo",
     description:
-      "Organiza partidas, adiciona jogadores e define equipas.",
+      "Organiza partidas, deixe que os jogadores entrem e definam equipas.",
   },
   {
     icon: "check",
