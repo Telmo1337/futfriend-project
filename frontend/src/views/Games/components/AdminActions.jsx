@@ -14,7 +14,7 @@ export default function AdminActions({
   const [confirmFinish, setConfirmFinish] = useState(false);
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} alignItems="center">
       {/* ESTADO: AGENDADO */}
       {state === "scheduled" && (
         <>

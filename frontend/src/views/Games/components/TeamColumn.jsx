@@ -12,7 +12,7 @@ export default function TeamColumn({
   adminId,
 }) {
   return (
-    <Paper sx={{ p: 3, borderRadius: 3 }}>
+    <Paper sx={{ p: 3, borderRadius: 3 }} >
       <Stack spacing={2}>
         <Typography fontWeight={600}>{title}</Typography>
 

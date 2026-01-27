@@ -1,4 +1,4 @@
-import { Stack, TextField, Typography, Divider } from "@mui/material";
+import { Grid, Stack, TextField, Typography, Divider, Paper } from "@mui/material";
 
 export default function ScoreEditor({ players, onGoalsChange }) {
   const teamA = players.filter(p => p.team === "teamA");
@@ -8,52 +8,90 @@ export default function ScoreEditor({ players, onGoalsChange }) {
   const goalsB = teamB.reduce((a, p) => a + (p.goals || 0), 0);
 
   return (
-    <Stack spacing={2}>
-      <Typography fontWeight={600}>
-        Resultado atual: {goalsA} - {goalsB}
-      </Typography>
+    <Paper sx={{ p: 5, borderRadius: 3 }}>
+      <Stack spacing={2}>
+        <Typography fontWeight={600}>
+          Resultado atual: {goalsA} - {goalsB}
+        </Typography>
 
-      <Divider />
+        <Divider />
 
-      <Typography fontWeight={600}>Equipa A</Typography>
-      {teamA.map(p => (
-        <Stack key={p.id} direction="row" spacing={2} alignItems="center">
-          <Typography sx={{ minWidth: 120 }}>
-            {p.user.nickname}
-          </Typography>
+        <Grid container spacing={3}>
+          {/* EQUIPA A */}
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2}>
+              <Typography fontWeight={600}>Equipa A</Typography>
 
-          <TextField
-            type="number"
-            size="small"
-            inputProps={{ min: 0 }}
-            value={p.goals ?? 0}
-            onChange={(e) =>
-              onGoalsChange(p.id, Number(e.target.value))
-            }
-          />
-        </Stack>
-      ))}
+              {teamA.length === 0 && (
+                <Typography color="text.secondary">
+                  Sem jogadores
+                </Typography>
+              )}
 
-      <Divider />
+              {teamA.map(p => (
+                <Stack
+                  key={p.id}
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                >
+                  <Typography sx={{ flexGrow: 1 }}>
+                    {p.user.nickname}
+                  </Typography>
 
-      <Typography fontWeight={600}>Equipa B</Typography>
-      {teamB.map(p => (
-        <Stack key={p.id} direction="row" spacing={2} alignItems="center">
-          <Typography sx={{ minWidth: 120 }}>
-            {p.user.nickname}
-          </Typography>
+                  <TextField
+                    type="number"
+                    size="small"
+                    inputProps={{ min: 0 }}
+                    value={p.goals ?? 0}
+                    onChange={(e) =>
+                      onGoalsChange(p.id, Number(e.target.value))
+                    }
+                    sx={{ width: 80 }}
+                  />
+                </Stack>
+              ))}
+            </Stack>
+          </Grid>
 
-          <TextField
-            type="number"
-            size="small"
-            inputProps={{ min: 0 }}
-            value={p.goals ?? 0}
-            onChange={(e) =>
-              onGoalsChange(p.id, Number(e.target.value))
-            }
-          />
-        </Stack>
-      ))}
-    </Stack>
+          {/* EQUIPA B */}
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2}>
+              <Typography fontWeight={600}>Equipa B</Typography>
+
+              {teamB.length === 0 && (
+                <Typography color="text.secondary">
+                  Sem jogadores
+                </Typography>
+              )}
+
+              {teamB.map(p => (
+                <Stack
+                  key={p.id}
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                >
+                  <Typography sx={{ flexGrow: 1 }}>
+                    {p.user.nickname}
+                  </Typography>
+
+                  <TextField
+                    type="number"
+                    size="small"
+                    inputProps={{ min: 0 }}
+                    value={p.goals ?? 0}
+                    onChange={(e) =>
+                      onGoalsChange(p.id, Number(e.target.value))
+                    }
+                    sx={{ width: 80 }}
+                  />
+                </Stack>
+              ))}
+            </Stack>
+          </Grid>
+        </Grid>
+      </Stack>
+    </Paper>
   );
 }

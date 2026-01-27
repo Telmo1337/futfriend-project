@@ -33,7 +33,7 @@ export default function GameLobby() {
   // 🔹 Jogadores
   const { players, refetch } = useGamePlayers(id);
 
-  // 🔹 Inicializar jogadores editáveis (com golos)
+  //  Inicializar jogadores editáveis (com golos)
   useEffect(() => {
     if (players.length) {
       setPlayersWithGoals(players);
@@ -67,7 +67,16 @@ export default function GameLobby() {
   }
 
   return (
-    <Stack spacing={4}>
+    <Stack
+      spacing={4}
+      sx={{
+        px: { xs: 2, md: 3 },
+        p: 4,
+        maxWidth: 1200,
+        
+      
+      }}
+    >
       <GameInfoCard game={game} />
       <GameTimeline state={game.state} />
 
