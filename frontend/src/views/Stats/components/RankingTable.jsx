@@ -10,11 +10,12 @@ import {
   Stack,
   Typography,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import API from "@/api/axios";
 import useAuth from "@/components/auth/hooks/useAuth";
 import { calcWinRate } from "../utils/stats";
-
 
 const rankingConfig = {
   victories: {
@@ -34,20 +35,27 @@ export default function RankingTable({ orderBy }) {
   const { user } = useAuth();
   const config = rankingConfig[orderBy];
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   useEffect(() => {
     API.get(`/stats/ranking?by=${orderBy}`)
       .then(res => setUsers(res.data));
   }, [orderBy]);
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 3 }}>
-      <Table>
+    <Paper sx={{ p: { xs: 1.5, sm: 3 }, borderRadius: 3 }}>
+      <Table size={isMobile ? "small" : "medium"}>
         <TableHead>
           <TableRow>
             <TableCell>#</TableCell>
             <TableCell>Jogador</TableCell>
-            <TableCell align="right">{config.label}</TableCell>
-            {config.showWinRate && (
+
+            {!isMobile && (
+              <TableCell align="right">{config.label}</TableCell>
+            )}
+
+            {!isMobile && config.showWinRate && (
               <TableCell align="right">Win rate</TableCell>
             )}
           </TableRow>
@@ -60,28 +68,43 @@ export default function RankingTable({ orderBy }) {
             return (
               <TableRow
                 key={u.id}
-                sx={{ bgcolor: isMe ? "action.selected" : "inherit" }}
+                sx={{
+                  bgcolor: isMe ? "action.selected" : "inherit",
+                }}
               >
+                {/* POSIÇÃO */}
                 <TableCell>
                   {i + 1}
-                  {i < 3 && (
-                    <Chip
-                      size="small"
-                      label={["🥇", "🥈", "🥉"][i]}
-                      sx={{ ml: 1 }}
-                    />
-                  )}
                 </TableCell>
 
+                {/* JOGADOR */}
                 <TableCell>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar>
+                  <Stack direction="row" spacing={1.5} alignItems="center">
+                    <Avatar
+                      sx={{
+                        width: isMobile ? 32 : 40,
+                        height: isMobile ? 32 : 40,
+                      }}
+                    >
                       {u.nickname.charAt(0).toUpperCase()}
                     </Avatar>
 
-                    <Typography fontWeight={isMe ? 600 : 400}>
-                      {u.nickname}
-                    </Typography>
+                    <Stack spacing={0}>
+                      <Typography fontWeight={isMe ? 600 : 400}>
+                        {u.nickname}
+                      </Typography>
+
+                      {isMobile && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                        >
+                          {config.label}: {config.value(u)}
+                          {config.showWinRate &&
+                            ` • ${calcWinRate(u)}%`}
+                        </Typography>
+                      )}
+                    </Stack>
 
                     {isMe && (
                       <Chip label="Tu" size="small" color="primary" />
@@ -89,11 +112,14 @@ export default function RankingTable({ orderBy }) {
                   </Stack>
                 </TableCell>
 
-                <TableCell align="right">
-                  {config.value(u)}
-                </TableCell>
+                {/* COLUNAS DESKTOP */}
+                {!isMobile && (
+                  <TableCell align="right">
+                    {config.value(u)}
+                  </TableCell>
+                )}
 
-                {config.showWinRate && (
+                {!isMobile && config.showWinRate && (
                   <TableCell align="right">
                     {calcWinRate(u)}%
                   </TableCell>
@@ -106,4 +132,3 @@ export default function RankingTable({ orderBy }) {
     </Paper>
   );
 }
-
