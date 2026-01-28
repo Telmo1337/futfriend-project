@@ -15,10 +15,10 @@ import { useNavigate } from "react-router-dom";
 import { gameStateConfig } from "../constants/gameStateConfig";
 
 import useGamePlayersCount from "../hooks/useGamePlayersCount";
-import useGamePlayers from "../hooks/useGamePlayers";
-import useJoinGame from "../hooks/useJoinGame";
+import useGamePlayers from "@/hooks/games/useGamePlayers";
+import useJoinGame from "@/hooks/games/useJoinGame";
 import useAuth from "@/components/auth/hooks/useAuth";
-import useLeaveGame from "../hooks/useLeaveGame";
+import useLeaveGame from "@/hooks/games/useLeaveGame";
 
 
 export default function DashboardGameCard({ game }) {
@@ -74,7 +74,15 @@ export default function DashboardGameCard({ game }) {
     >
       <Stack spacing={2} sx={{ flexGrow: 1 }}>
         {/* HEADER */}
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+            gap: 1,
+          }}
+        >
           <Typography fontWeight={600}>
             {game.teamA} vs {game.teamB}
           </Typography>
@@ -113,7 +121,7 @@ export default function DashboardGameCard({ game }) {
 
         {/* AVATARS */}
         {players.length > 0 && (
-          <AvatarGroup max={6} sx={{ mt: 1 }}>
+          <AvatarGroup max={6} sx={{ mt: 1, flexWrap: "wrap" }}>
             {players.map((p) => (
               <Tooltip key={p.id} title={p.user.nickname}>
                 <Avatar sx={{ width: 32, height: 32 }}>
@@ -125,8 +133,20 @@ export default function DashboardGameCard({ game }) {
         )}
 
         {/* ACTIONS */}
-        <Box sx={{ mt: "auto", display: "flex", gap: 1 }}>
-          <Button variant="outlined" size="small" fullWidth  onClick={() => navigate(`/jogos/${game.id}`)}>
+        <Box
+          sx={{
+            mt: "auto",
+            display: "flex",
+            gap: 1,
+            flexDirection: { xs: "column", sm: "row" },
+          }}
+        >
+          <Button
+            variant="outlined"
+            size="small"
+            fullWidth
+            onClick={() => navigate(`/jogos/${game.id}`)}
+          >
             Ver detalhes
           </Button>
 

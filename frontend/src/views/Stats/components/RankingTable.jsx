@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Paper,
+  TableContainer,
   Table,
   TableHead,
   TableRow,
@@ -45,7 +46,8 @@ export default function RankingTable({ orderBy }) {
 
   return (
     <Paper sx={{ p: { xs: 1.5, sm: 3 }, borderRadius: 3 }}>
-      <Table size={isMobile ? "small" : "medium"}>
+      <TableContainer sx={{ overflowX: "auto" }}>
+        <Table size={isMobile ? "small" : "medium"}>
         <TableHead>
           <TableRow>
             <TableCell>#</TableCell>
@@ -128,7 +130,8 @@ export default function RankingTable({ orderBy }) {
             );
           })}
         </TableBody>
-      </Table>
+        </Table>
+      </TableContainer>
     </Paper>
   );
 }

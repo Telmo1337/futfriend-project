@@ -25,6 +25,7 @@ export default function TeamColumn({
               direction="row"
               spacing={2}
               alignItems="center"
+              sx={{ flexWrap: "wrap" }}
             >
               <Avatar
                 sx={{
@@ -35,7 +36,12 @@ export default function TeamColumn({
                 {p.user.nickname.charAt(0).toUpperCase()}
               </Avatar>
 
-              <Stack direction="row" spacing={1} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{ flexWrap: "wrap" }}
+              >
                 <Typography fontWeight={isAdmin ? 600 : 400}>
                   {p.user.nickname}
                 </Typography>

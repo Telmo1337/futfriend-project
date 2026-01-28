@@ -31,9 +31,9 @@ export default function ScoreEditor({ players, onGoalsChange }) {
               {teamA.map(p => (
                 <Stack
                   key={p.id}
-                  direction="row"
+                  direction={{ xs: "column", sm: "row" }}
                   spacing={2}
-                  alignItems="center"
+                  alignItems={{ xs: "stretch", sm: "center" }}
                 >
                   <Typography sx={{ flexGrow: 1 }}>
                     {p.user.nickname}
@@ -47,7 +47,7 @@ export default function ScoreEditor({ players, onGoalsChange }) {
                     onChange={(e) =>
                       onGoalsChange(p.id, Number(e.target.value))
                     }
-                    sx={{ width: 80 }}
+                    sx={{ width: { xs: "100%", sm: 80 } }}
                   />
                 </Stack>
               ))}
@@ -68,9 +68,9 @@ export default function ScoreEditor({ players, onGoalsChange }) {
               {teamB.map(p => (
                 <Stack
                   key={p.id}
-                  direction="row"
+                  direction={{ xs: "column", sm: "row" }}
                   spacing={2}
-                  alignItems="center"
+                  alignItems={{ xs: "stretch", sm: "center" }}
                 >
                   <Typography sx={{ flexGrow: 1 }}>
                     {p.user.nickname}
@@ -84,7 +84,7 @@ export default function ScoreEditor({ players, onGoalsChange }) {
                     onChange={(e) =>
                       onGoalsChange(p.id, Number(e.target.value))
                     }
-                    sx={{ width: 80 }}
+                    sx={{ width: { xs: "100%", sm: 80 } }}
                   />
                 </Stack>
               ))}

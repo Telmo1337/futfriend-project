@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 
 //importar variaveis de ambiente
-import { PORT } from './config/env.js';
+import { PORT, ALLOWED_ORIGINS } from './config/env.js';
 
 //importar rotas
 import userRouter from './src/routes/userRoutes.js';
@@ -20,8 +20,27 @@ const app = express();
 
 app.use(express.json());
 
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+const allowedOrigins = ALLOWED_ORIGINS.length
+  ? ALLOWED_ORIGINS
+  : defaultAllowedOrigins;
+
 app.use(cors({
-  origin: 'http://localhost:5173', // endpoint do frontend
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    const isAllowed = allowedOrigins.some((entry) =>
+      entry instanceof RegExp ? entry.test(origin) : entry === origin
+    );
+
+    return isAllowed
+      ? callback(null, true)
+      : callback(new Error('Not allowed by CORS'));
+  },
   credentials: true, // permite envio de cookies e headers de autenticação
 }));
 

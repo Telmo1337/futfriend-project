@@ -1,14 +1,15 @@
 import { useParams } from "react-router-dom";
-import { Grid, Stack } from "@mui/material";
+import { Alert, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import API from "@/api/axios";
 
 import useAuth from "@/components/auth/hooks/useAuth";
-import useGamePlayers from "../Dashboard/hooks/useGamePlayers";
-import useJoinGame from "../Dashboard/hooks/useJoinGame";
-import useLeaveGame from "../Dashboard/hooks/useLeaveGame";
-import useStartGame from "./hooks/useStartGame";
-import useFinishGame from "./hooks/useFinishGame";
+import { LoadingState } from "@/components/UI";
+import useGame from "@/hooks/games/useGame";
+import useGamePlayers from "@/hooks/games/useGamePlayers";
+import useJoinGame from "@/hooks/games/useJoinGame";
+import useLeaveGame from "@/hooks/games/useLeaveGame";
+import useStartGame from "@/hooks/games/useStartGame";
+import useFinishGame from "@/hooks/games/useFinishGame";
 
 import GameInfoCard from "./components/GameInfoCard";
 import TeamColumn from "./components/TeamColumn";
@@ -19,16 +20,14 @@ export default function GameLobby() {
   const { id } = useParams();
   const { user } = useAuth();
 
-  const [game, setGame] = useState(null);
   const [playersWithGoals, setPlayersWithGoals] = useState([]);
 
-  // 🔹 Buscar jogo
-  const fetchGame = () =>
-    API.get(`/games/${id}`).then((res) => setGame(res.data));
-
-  useEffect(() => {
-    fetchGame();
-  }, [id]);
+  const {
+    game,
+    loading: isLoading,
+    error,
+    refetch: refetchGame,
+  } = useGame(id);
 
   // 🔹 Jogadores
   const { players, refetch } = useGamePlayers(id);
@@ -37,15 +36,25 @@ export default function GameLobby() {
   useEffect(() => {
     if (players.length) {
       setPlayersWithGoals(players);
+    } else {
+      setPlayersWithGoals([]);
     }
   }, [players]);
 
   const { join } = useJoinGame(id, refetch);
   const { leave } = useLeaveGame(id, refetch);
 
-  const { startGame } = useStartGame(fetchGame);
-  const { finishGame } = useFinishGame(id, fetchGame);
+  const { startGame } = useStartGame(refetchGame);
+  const { finishGame } = useFinishGame(id, refetchGame);
 
+  if (isLoading) return <LoadingState />;
+  if (error) {
+    return (
+      <Stack sx={{ p: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Stack>
+    );
+  }
   if (!game) return null;
 
   const isAdmin = game.createdById === user?.id;
@@ -54,7 +63,7 @@ export default function GameLobby() {
   const teamA = players.filter((p) => p.team === "teamA");
   const teamB = players.filter((p) => p.team === "teamB");
 
-  const userEntry = players.find((p) => p.user.id === user?.id);
+  const userEntry = players.find((p) => p.user?.id === user?.id);
   const userTeam = userEntry?.team;
 
   // 🔹 Alterar golos localmente

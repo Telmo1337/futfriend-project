@@ -37,11 +37,19 @@ export default function ProfileEdit({ form, onChange, onSave, onCancel }) {
           onChange={onChange}
         />
 
-        <Stack direction="row" spacing={2}>
-          <Button variant="contained" onClick={onSave}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <Button
+            variant="contained"
+            onClick={onSave}
+            sx={{ width: { xs: "100%", sm: "auto" } }}
+          >
             Guardar
           </Button>
-          <Button variant="text" onClick={onCancel}>
+          <Button
+            variant="text"
+            onClick={onCancel}
+            sx={{ width: { xs: "100%", sm: "auto" } }}
+          >
             Cancelar
           </Button>
         </Stack>

@@ -19,13 +19,22 @@ export default function ProfileView({ data, onEdit }) {
   return (
     <Paper sx={{ p: 3, borderRadius: 3 }}>
       <Stack spacing={3}>
-        <Stack direction="row" spacing={3} alignItems="center">
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={3}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+        >
           <Avatar sx={{ width: 72, height: 72 }}>
             {data.nickname.charAt(0).toUpperCase()}
           </Avatar>
 
           <Stack spacing={0.5}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{ flexWrap: "wrap" }}
+            >
               <Typography variant="h6" fontWeight={600}>
                 {data.nickname}
               </Typography>

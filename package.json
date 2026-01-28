@@ -1,0 +1,8 @@
+{
+  "name": "futfriend",
+  "private": true,
+  "scripts": {
+    "futfriend": "docker compose down && docker compose up -d --build",
+    "futfriend-stop": "docker compose down"
+  }
+}

@@ -7,7 +7,15 @@ export default function DashboardGames({ filter }) {
 
   if (loading) {
     return (
-      <Box display="grid" gridTemplateColumns="repeat(3,1fr)" gap={3}>
+      <Box
+        display="grid"
+        gridTemplateColumns={{
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          lg: "repeat(3, 1fr)",
+        }}
+        gap={3}
+      >
         {[1, 2, 3].map((i) => (
           <Skeleton key={i} height={220} />
         ))}
@@ -24,7 +32,15 @@ export default function DashboardGames({ filter }) {
   }
 
   return (
-    <Box display="grid" gridTemplateColumns="repeat(3,1fr)" gap={3}>
+    <Box
+      display="grid"
+      gridTemplateColumns={{
+        xs: "1fr",
+        sm: "repeat(2, 1fr)",
+        lg: "repeat(3, 1fr)",
+      }}
+      gap={3}
+    >
       {games.map((game) => (
         <DashboardGameCard key={game.id} game={game} />
       ))}
