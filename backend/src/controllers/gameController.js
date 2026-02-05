@@ -1,5 +1,10 @@
 // Controladores de jogos: recebem requests e delegam nos serviços
 // para aplicar regras de negócio e persistência.
+//
+// TIPOS DE JOGO PERMITIDOS:
+// - FIVE_A_SIDE (5x5): Máximo 5 jogadores por time = 10 total
+// - SEVEN_A_SIDE (7x7): Máximo 7 jogadores por time = 14 total
+// - ELEVEN_A_SIDE (11x11): Máximo 11 jogadores por time = 22 total
 
 import {
   joinGame,

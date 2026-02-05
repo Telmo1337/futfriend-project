@@ -29,6 +29,26 @@ O sistema segue o modelo RESTful, com autenticação via JWT, validação rigoro
 
 ---
 
+## Tipos de Jogo Suportados
+
+O Futfriend suporta apenas **3 tipos de jogo** com limitações de jogadores por time:
+
+| Tipo | Código | Jogadores por Time | Total |
+|------|--------|-------------------|-------|
+| **5x5** | `FIVE_A_SIDE` | Máximo 5 | 10 |
+| **7x7** | `SEVEN_A_SIDE` | Máximo 7 | 14 |
+| **11x11** | `ELEVEN_A_SIDE` | Máximo 11 | 22 |
+
+**Validações implementadas:**
+- ✅ Tipo de jogo obrigatório ao criar um jogo
+- ✅ Máximo de jogadores por time definido automaticamente
+- ✅ Validação na inscrição de jogadores (previne excesso)
+- ✅ Mensagens de erro claras quando o limite é atingido
+
+Para mais informações, ver [GAME_TYPES.md](../GAME_TYPES.md)
+
+---
+
 ## Tecnologias Principais
 
 | Tecnologia | Descrição |

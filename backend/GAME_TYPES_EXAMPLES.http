@@ -1,0 +1,246 @@
+/**
+ * EXEMPLOS DE REQUISIÇÕES - TIPOS DE JOGO
+ * Futfriend API - Game Endpoints
+ * 
+ * TIPOS PERMITIDOS:
+ * - FIVE_A_SIDE (5x5): Máximo 5 jogadores por time
+ * - SEVEN_A_SIDE (7x7): Máximo 7 jogadores por time
+ * - ELEVEN_A_SIDE (11x11): Máximo 11 jogadores por time
+ */
+
+// ============================================================
+// 1. CRIAR UM JOGO 5X5
+// ============================================================
+POST http://localhost:5500/api/v1/games
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "teamA": "Manchester",
+  "teamB": "Liverpool", 
+  "date": "2026-02-15T18:00:00Z",
+  "location": "Campo Municipal",
+  "type": "FIVE_A_SIDE"
+}
+
+// Response 201:
+// {
+//   "id": "uuid-123",
+//   "teamA": "Manchester",
+//   "teamB": "Liverpool",
+//   "type": "FIVE_A_SIDE",
+//   "state": "scheduled",
+//   "maxPlayersPerTeam": 5,  // AUTOMATICAMENTE DEFINIDO
+//   "goalsA": 0,
+//   "goalsB": 0,
+//   "date": "2026-02-15T18:00:00.000Z",
+//   "location": "Campo Municipal",
+//   "createdById": "user-id",
+//   "createdAt": "2026-02-05T12:30:00.000Z",
+//   "updatedAt": "2026-02-05T12:30:00.000Z"
+// }
+
+// ============================================================
+// 2. CRIAR UM JOGO 7X7
+// ============================================================
+POST http://localhost:5500/api/v1/games
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "teamA": "Barcelona",
+  "teamB": "Real Madrid",
+  "date": "2026-02-20T19:00:00Z", 
+  "location": "Camp Nou",
+  "type": "SEVEN_A_SIDE"
+}
+
+// Response 201:
+// {
+//   "id": "uuid-456",
+//   "type": "SEVEN_A_SIDE",
+//   "maxPlayersPerTeam": 7,  // AUTOMATICAMENTE DEFINIDO
+//   ...
+// }
+
+// ============================================================
+// 3. CRIAR UM JOGO 11X11
+// ============================================================
+POST http://localhost:5500/api/v1/games
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "teamA": "Portugal",
+  "teamB": "França",
+  "date": "2026-03-01T20:00:00Z",
+  "location": "Estádio Nacional",
+  "type": "ELEVEN_A_SIDE"
+}
+
+// Response 201:
+// {
+//   "id": "uuid-789",
+//   "type": "ELEVEN_A_SIDE", 
+//   "maxPlayersPerTeam": 11,  // AUTOMATICAMENTE DEFINIDO
+//   ...
+// }
+
+// ============================================================
+// 4. ENTRAR MNUM JOGO 5X5 (Team A - Com limite)
+// ============================================================
+POST http://localhost:5500/api/v1/games/uuid-123/join
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "team": "teamA"
+}
+
+// Response 201:
+// {
+//   "id": "playerGame-id",
+//   "userId": "current-user-id",
+//   "gameId": "uuid-123",
+//   "team": "teamA",
+//   "goals": 0,
+//   "score": null,
+//   "createdAt": "2026-02-05T12:35:00.000Z"
+// }
+
+// ============================================================
+// 5. TENTAR ENTRAR NUM JOGO CHEIO (ERRO)
+// ============================================================
+POST http://localhost:5500/api/v1/games/uuid-123/join
+Authorization: Bearer {JWT_TOKEN}
+Response 400:
+// {
+//   "error": "A equipa teamA já está cheia. Máximo de 5 jogadores permitidos."
+// }
+
+// ============================================================
+// 6. CRIAR JOGO COM TIPO INVÁLIDO (ERRO)
+// ============================================================
+POST http://localhost:5500/api/v1/games
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "teamA": "Team A",
+  "teamB": "Team B",
+  "date": "2026-02-15T18:00:00Z",
+  "location": "Campo",
+  "type": "EIGHT_A_SIDE"  // ❌ INVÁLIDO
+}
+
+// Response 400:
+// {
+//   "error": "Invalid enum value. Expected 'FIVE_A_SIDE' | 'SEVEN_A_SIDE' | 'ELEVEN_A_SIDE'"
+// }
+
+// ============================================================
+// 7. ATUALIZAR TIPO DE JOGO
+// ============================================================
+PATCH http://localhost:5500/api/v1/games/uuid-123
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "type": "SEVEN_A_SIDE"
+}
+
+// Response 200:
+// {
+//   "message": "Jogo atualizado com sucesso.",
+//   "game": {
+//     "id": "uuid-123",
+//     "type": "SEVEN_A_SIDE",
+//     "maxPlayersPerTeam": 7,  // ATUALIZADO AUTOMATICAMENTE
+//     ...
+//   }
+// }
+
+// ============================================================
+// 8. LISTAR TODOS OS JOGOS
+// ============================================================
+GET http://localhost:5500/api/v1/games?page=1&limit=10
+Authorization: Bearer {JWT_TOKEN}
+
+// Response 200:
+// {
+//   "page": 1,
+//   "limit": 10,
+//   "total": 3,
+//   "totalPages": 1,
+//   "games": [
+//     {
+//       "id": "uuid-123",
+//       "teamA": "Manchester",
+//       "teamB": "Liverpool",
+//       "type": "FIVE_A_SIDE",
+//       "maxPlayersPerTeam": 5,
+//       "state": "scheduled",
+//       "teamAPlayers": 2,
+//       "teamBPlayers": 1,
+//       "date": "2026-02-15T18:00:00.000Z",
+//       "location": "Campo Municipal"
+//     },
+//     ...
+//   ]
+// }
+
+// ============================================================
+// 9. OBTER DETALHES DE UM JOGO
+// ============================================================
+GET http://localhost:5500/api/v1/games/uuid-123
+Authorization: Bearer {JWT_TOKEN}
+
+// Response 200:
+// {
+//   "id": "uuid-123",
+//   "teamA": "Manchester",
+//   "teamB": "Liverpool",
+//   "type": "FIVE_A_SIDE",
+//   "maxPlayersPerTeam": 5,
+//   "state": "scheduled",
+//   "goalsA": 0,
+//   "goalsB": 0,
+//   "date": "2026-02-15T18:00:00.000Z",
+//   "location": "Campo Municipal",
+//   "createdBy": {
+//     "id": "user-id",
+//     "nickname": "joao123"
+//   },
+//   "playersGame": [
+//     {
+//       "id": "pg-1",
+//       "team": "teamA",
+//       "goals": 0,
+//       "user": {
+//         "nickname": "player1"
+//       }
+//     },
+//     {
+//       "id": "pg-2",
+//       "team": "teamA",
+//       "goals": 1,
+//       "user": {
+//         "nickname": "player2"
+//       }
+//     },
+//     ...
+//   ]
+// }
+
+/*
+ * ==================================================
+ * RESUMO DE VALIDAÇÕES
+ * ==================================================
+ * 
+ * ✅ Tipo de jogo é OBRIGATÓRIO
+ * ✅ Apenas 3 tipos são permitidos (FIVE_A_SIDE, SEVEN_A_SIDE, ELEVEN_A_SIDE)
+ * ✅ maxPlayersPerTeam é definido AUTOMATICAMENTE baseado no tipo
+ * ✅ Validação de limite ao entrar no jogo (não deixa exceder)
+ * ✅ Mensagens de erro claras e específicas
+ * ✅ Suporta atualização de tipo (ajusta automaticamente maxPlayersPerTeam)
+ */

@@ -1,5 +1,18 @@
 import { prisma } from "../../db/prisma.js";
 
+/**
+ * Mapear tipo de jogo para número de jogadores por time
+ * Tipos permitidos:
+ * - FIVE_A_SIDE: 5x5 (máximo 5 jogadores por time = 10 total)
+ * - SEVEN_A_SIDE: 7x7 (máximo 7 jogadores por time = 14 total)
+ * - ELEVEN_A_SIDE: 11x11 (máximo 11 jogadores por time = 22 total)
+ */
+const gameTypeToMaxPlayers = {
+  FIVE_A_SIDE: 5,
+  SEVEN_A_SIDE: 7,
+  ELEVEN_A_SIDE: 11,
+};
+
 /* ============================================================
    1. Criar jogo
 ============================================================ */
@@ -15,11 +28,22 @@ export async function createGame(data, userId) {
     };
   }
 
+  // Definir automaticamente maxPlayersPerTeam baseado no tipo de jogo
+  const maxPlayersPerTeam = gameTypeToMaxPlayers[data.type];
+
+  if (!maxPlayersPerTeam) {
+    return {
+      error: "Tipo de jogo inválido. Tipos permitidos: FIVE_A_SIDE (5x5), SEVEN_A_SIDE (7x7), ELEVEN_A_SIDE (11x11).",
+      status: 400,
+    };
+  }
+
   const game = await prisma.game.create({
     data: {
       ...data,
       createdById: userId,
       state: "scheduled",
+      maxPlayersPerTeam,
     },
   });
 
@@ -140,6 +164,18 @@ export async function updateGame(gameId, data, user) {
       error: "Não é possível alterar um jogo que já foi finalizado.",
       status: 400,
     };
+  }
+
+  // Se o tipo de jogo é alterado, recalcular maxPlayersPerTeam automaticamente
+  if (data.type) {
+    const maxPlayersPerTeam = gameTypeToMaxPlayers[data.type];
+    if (!maxPlayersPerTeam) {
+      return {
+        error: "Tipo de jogo inválido. Tipos permitidos: FIVE_A_SIDE (5x5), SEVEN_A_SIDE (7x7), ELEVEN_A_SIDE (11x11).",
+        status: 400,
+      };
+    }
+    data.maxPlayersPerTeam = maxPlayersPerTeam;
   }
 
   // GRAVAR GOLOS DOS JOGADORES
@@ -264,6 +300,14 @@ export async function deleteGame(gameId, userId) {
 
 /* ============================================================
    7. Entrar num jogo
+   
+   Validações:
+   - Jogo tem que estar no estado "scheduled"
+   - Utilizador não pode estar já inscrito
+   - Limite de jogadores por time definido pelo tipo de jogo:
+     * FIVE_A_SIDE (5x5): máximo 5 jogadores por time = 10 total
+     * SEVEN_A_SIDE (7x7): máximo 7 jogadores por time = 14 total
+     * ELEVEN_A_SIDE (11x11): máximo 11 jogadores por time = 22 total
 ============================================================ */
 export async function joinGame(gameId, userId, team) {
   const game = await prisma.game.findUnique({
@@ -291,7 +335,7 @@ export async function joinGame(gameId, userId, team) {
 
   if (countTeam >= game.maxPlayersPerTeam) {
     return {
-      error: `A equipa ${team} já está cheia.`,
+      error: `A equipa ${team} já está cheia. Máximo de ${game.maxPlayersPerTeam} jogadores permitidos.`,
       status: 400,
     };
   }
